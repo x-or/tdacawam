@@ -57,6 +57,8 @@
       }
     </style>
     <script>
+      var maxCanvasSize = 4096;
+      var maxModulo = 4096;
 
       // http://javascript.about.com/od/problemsolving/a/modulobug.htm
       Number.prototype.mod = function(n) {
@@ -511,11 +513,11 @@
         },
         isDisplayableSize: function(size) {
           var scale = this.state.scale;
-          return size*scale <= 4096 && size*scale > 1;
+          return size*scale <= maxCanvasSize && size*scale > 1;
         },
         isDisplayableScale: function(scale) {
           var stateSize = this.state.stateSize;
-          return stateSize*scale <= 4096 && stateSize*scale > 1;
+          return stateSize*scale <= maxCanvasSize && stateSize*scale > 1;
         },
         render: function() {
           var modulo = this.state.modulo;
@@ -524,7 +526,7 @@
           var modpow = function(e) { return Math.pow(modulo, e) } 
           return <div>
             <div>
-                <label>Modulo: </label><input type="number" min="2" max="4096" value={modulo} onChange={this.handleModuloChange}/>
+                <label>Modulo: </label><input type="number" min="2" max={maxModulo} value={modulo} onChange={this.handleModuloChange}/>
                 <label>Pattern: <select>
                   <option onClick={this.emptyPattern}>Empty</option>
                   <option onClick={this.digitReversalPattern}>Digit-reversal</option>
