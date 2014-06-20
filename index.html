@@ -168,6 +168,23 @@
         var mouseY = evt.clientY - top + window.pageYOffset;
         return { x: mouseX, y: mouseY };
       }
+
+      var queryString = (function(a) {
+        // http://stackoverflow.com/a/3855394/3607531
+        if (a == "") return {};
+        var b = {};
+        for (var i = 0; i < a.length; ++i) {
+          var p=a[i].split('=');
+          if (p.length != 2)
+            continue;
+          b[p[0]] = decodeURIComponent(p[1].replace(/\+/g, " "));
+        }
+        return b;
+      })(window.location.search.substr(1).split('&'));
+
+      function parseIntInRange(s, intMin, intMax) {
+        return Math.min(intMax, Math.max(intMin, parseInt(s)));
+      }
     </script>
   </head>
   <body bgcolor="#efefef">
@@ -338,7 +355,7 @@
       });
       var ReactApplication = React.createClass({
         getInitialState: function() {
-          var stateSize = 512;
+          var stateSize = parseIntInRange(queryString['size'], 2, maxCanvasSize) || 512;
           var state0 = createArray(stateSize, stateSize);
           var state1 = createArray(stateSize, stateSize);
           for (var i = 0; i < stateSize; i++)
@@ -348,13 +365,13 @@
             }
           return {
             stateSize: stateSize, 
-            scale: 1,
+            scale: parseIntInRange(queryString['scale'], 1, Math.floor(maxCanvasSize/stateSize)) || 1,
             state: [state0, state1], 
             curState: 0,
-            modulo: 2,
+            modulo: parseIntInRange(queryString['modulo'], 2, maxModulo) || 2,
             ruleStep: 0,
-            rule: 15,
-            sign: 0,
+            rule: parseIntInRange(queryString['rule'], 0, 511) || 15,
+            sign: parseIntInRange(queryString['sign'], 0, 511) || 0,
             imageDisplay: "none",
             imageSrc: "",
           };
@@ -415,6 +432,14 @@
             for (var j = 0; j < stateSize; j++)
               state[i][j] = Math.floor(Math.random() * modulo);
           this.renderState();
+        },
+        getPatternNames: function() {
+          return {
+            "empty": this.emptyPattern,
+            "digit-reversal": this.digitReversalPattern,
+            "random": this.randomPattern,
+            "diagonal": this.diagonalPattern
+          }
         },
         applyRule: function() {
           var modulo = this.state.modulo;
@@ -505,6 +530,9 @@
         },
         componentDidMount: function() {
           console.log("componentWillMount %s", this.refs.stateCanvas);
+          var requestedPattern = this.getPatternNames()[queryString['pattern']];
+          if (requestedPattern)
+            requestedPattern();
           this.renderState();
         },
         componentDidUpdate: function() {
