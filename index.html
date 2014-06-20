@@ -1,0 +1,602 @@
+﻿<!DOCTYPE HTML>
+<!-- 
+  -- Two-Dimensional Additive Cellular Automata with Modular Arithmetics (Web Application)
+  -- Copyright (c) 2014 Sergey Shishmintzev
+  -- License: MIT
+  -- GitHub Project: http://github.com/x-or/tdacawam
+  -->
+<html>
+  <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>Two-Dimensional Additive Cellular Automata with Arbitrary Modulo</title>
+    <style type="text/css">
+      div.container {
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: none;
+        margin-bottom: none;
+      }
+      
+      div.rule-column {
+        /*width: 130px;*/
+        float: left;
+      }
+
+      div.view-column {
+        float: left;
+      }
+
+      div.clear {
+        clear: both;
+      }
+
+      table.rule-layout {
+        margin-right: 10px;
+        border: 1px solid #000;
+        border-collapse: collapse;
+      }
+
+      table.rule-layout td {
+        border: 1px solid #000;
+        text-align: center;
+        padding: 3px 7px 2px;
+      }
+
+      input[type="number"] {
+        width:50px;
+      }
+
+      .footer {
+        text-align: left;
+        font-size: 13px;
+        padding-top: 2em;
+        padding-bottom: 2em;
+      }
+      .footer p {
+        margin: 0px;
+      }
+    </style>
+    <script>
+
+      // http://javascript.about.com/od/problemsolving/a/modulobug.htm
+      Number.prototype.mod = function(n) {
+        return ((this%n)+n)%n;
+      }
+
+      function assert(condition, message) {
+        // http://stackoverflow.com/a/15313435/3607531
+        if (!condition) {
+          throw message || "Assertion failed";
+       }
+      }
+
+      function createArray(length) {
+        // http://stackoverflow.com/a/966938/3607531
+        var arr = new Array(length || 0),
+            i = length;
+
+        if (arguments.length > 1) {
+          var args = Array.prototype.slice.call(arguments, 1);
+          while(i--) arr[length-1 - i] = createArray.apply(this, args);
+        }
+  
+        return arr;
+      }      
+ 
+      function digitReverse(n, digitCount, base) {
+        var r = 0;
+        for (var i = 0; i < digitCount; i++) {
+          r = base*r + n % base;
+          n = Math.floor(n / base);
+        }
+        return r;
+      }
+
+      function Xreverse(n, t, b) {
+        var r = 0;
+        r = 2*r + n % 2;
+        n = Math.floor(n / 2);
+        for (var i = 0; i < t; i++) {
+          r = b*r + n % b;
+          n = Math.floor(n / b);
+        }
+        assert (n == 0, "assertion failed in Xreverse: n == 0");
+        return r;
+      }
+
+      assert(digitReverse(1 * Math.pow(3, 2) + 0 * Math.pow(3, 1) + 0 * Math.pow(3, 0), 3, 3) === 0 * Math.pow(3, 2) + 0 * Math.pow(3, 1) + 1 * Math.pow(3, 0), "digitReverse 1")
+      assert(digitReverse(2 * Math.pow(3, 2) + 0 * Math.pow(3, 1) + 1 * Math.pow(3, 0), 3, 3) === 1 * Math.pow(3, 2) + 0 * Math.pow(3, 1) + 2 * Math.pow(3, 0), "digitReverse 2")
+      assert(digitReverse(0 * Math.pow(3, 2) + 1 * Math.pow(3, 1) + 2 * Math.pow(3, 0), 3, 3) === 2 * Math.pow(3, 2) + 1 * Math.pow(3, 1) + 0 * Math.pow(3, 0), "digitReverse 3")
+      
+      function render(state, state_size, canvas, color, scale){
+        var context = canvas.getContext('2d');
+        
+        var imageData = context.createImageData(state_size*scale, state_size*scale);
+        var pixel = imageData.data;
+
+        var off = 0;
+        var val = 0;
+        var pos = 0;
+        var state_row;  
+        if (scale == 1) {
+          for (var i = 0; i < state_size; i++) {
+            state_row = state[i];
+            for (var j = 0; j < state_size; j++) {
+              val = color[state_row[j]];
+              pos = off + j*4;
+              pixel[pos+0] = val[0];
+              pixel[pos+1] = val[1];
+              pixel[pos+2] = val[2];
+              pixel[pos+3] = 255;
+            }
+            off += state_size*4;
+          }
+        } else {
+          for (var i = 0; i < state_size; i++) {
+            state_row = state[i];
+            for (var ii = 0; ii < scale; ii++) {
+              for (var j = 0; j < state_size; j++) {
+                val = color[state_row[j]];
+                for (var jj = 0; jj < scale; jj++) {
+                  pos = off + j*scale*4 + jj*4;
+                  pixel[pos+0] = val[0];
+                  pixel[pos+1] = val[1];
+                  pixel[pos+2] = val[2];
+                  pixel[pos+3] = 255;
+                }
+              }
+              off += state_size*scale*4;
+            }
+          }
+        }
+
+        context.putImageData(imageData, 0, 0);
+      }
+      
+      function getMousePos(canvas, evt){
+        var obj = canvas;
+        var top = 0;
+        var left = 0;
+        while (obj && obj.tagName != 'BODY') {
+          top += obj.offsetTop;
+           left += obj.offsetLeft;
+           obj = obj.offsetParent;
+        }
+        var mouseX = evt.clientX - left + window.pageXOffset;
+        var mouseY = evt.clientY - top + window.pageYOffset;
+        return { x: mouseX, y: mouseY };
+      }
+    </script>
+  </head>
+  <body bgcolor="#efefef">
+    <div id="container">
+    </div>
+    <script src="externals/react/react.js"></script>
+    <script src="externals/react/JSXTransformer.js"></script>
+    <script type="text/jsx">
+      /**
+       * @jsx React.DOM
+       */
+      var RuleCheckBox = React.createClass({
+        propTypes: {
+          bit: React.PropTypes.any.isRequired,
+          rule: React.PropTypes.any.isRequired,
+          disabled: React.PropTypes.number
+        },
+        getDefaultProps: function() {
+          return {disabled: 0};
+        },
+        handleChange: function(event) { 
+          var value = 0;
+          if (event.target.checked) {
+            value = this.props.bit;
+          }
+          this.props.onChange({bit: this.props.bit, value: value});
+        },
+        render: function() {
+          var checked = (this.props.rule & this.props.bit) != 0;
+          var disabled = (this.props.disabled & this.props.bit) != 0;
+          return <input type="checkbox" disabled={disabled} checked={checked} onChange={this.handleChange} title={this.props.bit}/>
+        }
+      });
+      var RuleCheckGrid = React.createClass({
+        propTypes: {
+          rule: React.PropTypes.number.isRequired,
+          disabled: React.PropTypes.number
+        },
+        getDefaultProps: function() {
+          return {disabled: 0};
+        },
+        handleRuleCheckBoxChange: function(data) {
+          var rule = this.props.rule;
+          if (data.value != 0) {
+            rule |= data.bit;
+          } else {
+            rule &= (~data.bit) & 511;
+          }
+          this.props.onChange(rule);
+        },
+        render: function() {
+          var rule = this.props.rule;
+          var disabled = this.props.disabled;
+          return <table>
+            <tr><td><RuleCheckBox bit={64} rule={rule} disabled={disabled} onChange={this.handleRuleCheckBoxChange} /></td>
+                <td><RuleCheckBox bit={128} rule={rule} disabled={disabled} onChange={this.handleRuleCheckBoxChange} /></td>
+                <td><RuleCheckBox bit={256} rule={rule} disabled={disabled} onChange={this.handleRuleCheckBoxChange} /></td></tr>
+            <tr><td><RuleCheckBox bit={32} rule={rule} disabled={disabled} onChange={this.handleRuleCheckBoxChange} /></td>
+                <td><RuleCheckBox bit={1} rule={rule} disabled={disabled} onChange={this.handleRuleCheckBoxChange} /></td>
+                <td><RuleCheckBox bit={2} rule={rule} disabled={disabled} onChange={this.handleRuleCheckBoxChange} /></td></tr>
+            <tr><td><RuleCheckBox bit={16} rule={rule} disabled={disabled} onChange={this.handleRuleCheckBoxChange} /></td>
+                <td><RuleCheckBox bit={8} rule={rule} disabled={disabled} onChange={this.handleRuleCheckBoxChange} /></td>
+                <td><RuleCheckBox bit={4} rule={rule} disabled={disabled} onChange={this.handleRuleCheckBoxChange} /></td></tr>
+          </table>;
+        }
+      });
+      var RuleLabel = React.createClass({
+        render: function() {
+          var bit = this.props.bit;
+          var text = "0";
+          if ((this.props.rule & bit) != 0) {
+            text =  "+";
+            if ((this.props.sign & bit) != 0)
+              text =  "-";
+          }
+          return <div>{text}</div>
+        }
+      });
+      var RuleGrid = React.createClass({
+        propTypes: {
+          rule: React.PropTypes.number.isRequired,
+          sign: React.PropTypes.number.isRequired
+        },
+        render: function() {
+          var rule = this.props.rule;
+          var sign = this.props.sign;
+          return <div>
+            <div>Rule/Sign</div>
+            <table className="rule-layout">
+              <tr><td><RuleLabel bit={64} rule={rule} sign={sign} /></td>
+                  <td><RuleLabel bit={128} rule={rule} sign={sign} /></td>
+                  <td><RuleLabel bit={256} rule={rule} sign={sign} /></td></tr>
+              <tr><td><RuleLabel bit={32} rule={rule} sign={sign} /></td>
+                  <td><RuleLabel bit={1} rule={rule} sign={sign} /></td>
+                  <td><RuleLabel bit={2} rule={rule} sign={sign} /></td></tr>
+              <tr><td><RuleLabel bit={16} rule={rule} sign={sign} /></td>
+                  <td><RuleLabel bit={8} rule={rule} sign={sign} /></td>
+                  <td><RuleLabel bit={4} rule={rule} sign={sign} /></td></tr>
+            </table>
+          </div>;
+        }
+      });
+      var RuleEditor = React.createClass({
+        propTypes: {
+          rule: React.PropTypes.number.isRequired,
+          disabled: React.PropTypes.number
+        },
+        getDefaultProps: function() {
+          return {disabled: 0};
+        },
+        handleInputChange: function(event) {
+          var rule = parseInt(event.target.value);
+          if (!(rule >= 0 && rule <= 511)) // FIXME
+             rule = 0;
+          this.props.onChange(rule);
+        },
+        handleRuleChange: function(rule) {
+          this.props.onChange(rule);
+        },
+        render: function() {
+          return <div>
+                   <div>{this.props.type} # <input type="text" size="3" value={this.props.rule} onChange={this.handleInputChange} /></div>
+                   <RuleCheckGrid rule={this.props.rule} disabled={this.props.disabled} onChange={this.handleRuleChange} />
+                 </div>;
+        }
+      });
+      var RuleSignEditor = React.createClass({
+        propTypes: {
+          rule: React.PropTypes.number.isRequired,
+          sign: React.PropTypes.number.isRequired
+        },
+        handleRuleChange: function(rule) {
+          this.props.onChange(rule, this.props.sign)
+        },
+        handleSignChange: function(sign) {
+          this.props.onChange(this.props.rule, sign)
+        },
+        render: function() {
+          var rule = this.props.rule;
+          var sign = this.props.sign;
+          return <div>
+               <hr />
+               <RuleEditor type="Rule" rule={rule} onChange={this.handleRuleChange} />
+               <hr />
+               <RuleEditor type="Sign" rule={sign} disabled={~rule} onChange={this.handleSignChange} />
+               <hr />
+               <RuleGrid rule={rule} sign={sign} />
+               <hr />
+               Rule bits layout:
+               <table className="rule-layout">
+                 <tr><td>64</td><td>128</td><td>256</td></tr>
+                 <tr><td>32</td><td>1</td><td>2</td></tr>
+                 <tr><td>16</td><td>8</td><td>4</td></tr>
+               </table>
+               <hr />
+          </div>;
+        }
+      });
+
+      var HidingOption = React.createClass({
+        render: function() {
+          if (this.props.visible) {
+            return <option value={this.props.value}>{this.props.text}</option>;
+          } else {
+            return <option disabled={true} style={{ display: "none"}} value={this.props.value}>{this.props.text}</option>;
+          }
+         }
+      });
+      var ReactApplication = React.createClass({
+        getInitialState: function() {
+          var stateSize = 512;
+          var state0 = createArray(stateSize, stateSize);
+          var state1 = createArray(stateSize, stateSize);
+          for (var i = 0; i < stateSize; i++)
+            for (var j = 0; j < stateSize; j++) {
+               state0[i][j] = 0;
+               state1[i][j] = 0;
+            }
+          return {
+            stateSize: stateSize, 
+            scale: 1,
+            state: [state0, state1], 
+            curState: 0,
+            modulo: 2,
+            ruleStep: 0,
+            rule: 15,
+            sign: 0,
+            imageDisplay: "none",
+            imageSrc: "",
+          };
+        },
+        clearState: function() {
+          var stateSize = this.state.stateSize;
+          var state0 = this.state.state[0];
+          var state1 = this.state.state[1];
+          for (var i = 0; i < stateSize; i++)
+            for (var j = 0; j < stateSize; j++) {
+               state0[i][j] = 0;
+               state1[i][j] = 0;
+            }
+          this.setState({ruleStep: 0});
+        },
+        renderState: function() {
+          var modulo = this.state.modulo;
+          var stateSize = this.state.stateSize;
+          var scale = this.state.scale;
+          var state = this.state.state[this.state.curState];
+          var color = new Array(modulo+1); // cache?
+          for (var i = 0; i < modulo; i++) { 
+            c = Math.floor(255*i/(modulo-1));
+            color[i] = [c, c, c];
+          }
+          color[modulo] = [255, 0, 0]; // error color
+          render(state, stateSize, this.refs.stateCanvas.getDOMNode(), color, scale);
+        },
+        emptyPattern: function() {
+          this.clearState();
+          this.renderState();
+        },
+        digitReversalPattern: function() {
+          var modulo = this.state.modulo;
+          var stateSize = this.state.stateSize;
+          var state = this.state.state[this.state.curState];
+          this.clearState();
+          var digitCount = Math.round(Math.log(stateSize) / Math.log(modulo));
+          for (var i = 0; i < stateSize; i++)
+            state[i][digitReverse(i, digitCount, modulo)] = modulo-1;
+          this.renderState();
+        },
+        diagonalPattern: function() {
+          var modulo = this.state.modulo;
+          var stateSize = this.state.stateSize;
+          var state = this.state.state[this.state.curState];
+          this.clearState();
+          for (var i = 0; i < stateSize; i++)
+            state[i][i] = modulo-1;
+          this.renderState();
+        },
+        randomPattern: function() {
+          var modulo = this.state.modulo;
+          var stateSize = this.state.stateSize;
+          var state = this.state.state[this.state.curState];
+          this.clearState();
+          for (var i = 0; i < stateSize; i++)
+            for (var j = 0; j < stateSize; j++)
+              state[i][j] = Math.floor(Math.random() * modulo);
+          this.renderState();
+        },
+        applyRule: function() {
+          var modulo = this.state.modulo;
+          var stateSize = this.state.stateSize;
+          var state0 = this.state.state[this.state.curState];
+          var state1 = this.state.state[this.state.curState ^ 1];
+          var rule = this.state.rule;
+          var sign = this.state.sign;
+          var v = 0;
+          var r1 = ((this.state.rule & 1) != 0 ? 1 : 0) * ((this.state.sign & 1) != 0 ? -1 : 1);
+          var r2 = ((this.state.rule & 2) != 0 ? 1 : 0) * ((this.state.sign & 2) != 0 ? -1 : 1);
+          var r4 = ((this.state.rule & 4) != 0 ? 1 : 0) * ((this.state.sign & 4) != 0 ? -1 : 1);
+          var r8 = ((this.state.rule & 8) != 0 ? 1 : 0) * ((this.state.sign & 8) != 0 ? -1 : 1);
+          var r16 = ((this.state.rule & 16) != 0 ? 1 : 0) * ((this.state.sign & 16) != 0 ? -1 : 1);
+          var r32 = ((this.state.rule & 32) != 0 ? 1 : 0) * ((this.state.sign & 32) != 0 ? -1 : 1);
+          var r64 = ((this.state.rule & 64) != 0 ? 1 : 0) * ((this.state.sign & 64) != 0 ? -1 : 1);
+          var r128 = ((this.state.rule & 128) != 0 ? 1 : 0) * ((this.state.sign & 128) != 0 ? -1 : 1);
+          var r256 = ((this.state.rule & 256) != 0 ? 1 : 0) * ((this.state.sign & 256) != 0 ? -1 : 1);
+          var i0 = 0, i1 = 0, il = 0, j0 = 0, j1 = 0, jl = 0;
+          var state_il, state_i0, state_i1;
+          for (var i0 = 0; i0 < stateSize; i0++) {
+            il = (i0 - 1) % stateSize; if (il < 0) il += stateSize;
+            i1 = (i0 + 1) % stateSize;
+            state_il = state0[il];
+            state_i0 = state0[i0];
+            state_i1 = state0[i1];
+            for (var j0 = 0; j0 < stateSize; j0++) {
+               jl = (j0 - 1) % stateSize; if (jl < 0) jl += stateSize;
+               j1 = (j0 + 1) % stateSize;
+               //v = state0[i0][j0] - state0[i0][j1] - state0[i1][j0] + state0[i1][j1];
+               // Rule layout
+               // +----+-----+-----+
+               // | 64 | 128 | 256 |
+               // +----+-----+-----+
+               // | 32 |  1  |  2  |
+               // +----+-----+-----+
+               // | 16 |  8  |  4  |
+               // +----+-----+-----+
+               v = r64*state_il[jl] + r128*state_il[j0] + r256*state_il[j1] +
+                   r32*state_i0[jl] +   r1*state_i0[j0] +   r2*state_i0[j1] +
+                   r16*state_i1[jl] +   r8*state_i1[j0] +   r4*state_i1[j1]; 
+               state1[i0][j0] = ((v%modulo)+modulo)%modulo;
+            }
+          }
+          this.state.curState ^= 1;
+          this.renderState();
+          this.setState({ruleStep: this.state.ruleStep + 1});
+          return false;
+        },
+        handleCanvaseMouseDown: function(event) {
+          var pos = getMousePos(this.refs.stateCanvas.getDOMNode(), event);
+          var scale = this.state.scale;
+          var x = Math.floor(pos.x/scale);
+          var y = Math.floor(pos.y/scale);
+          this.state.state[this.state.curState][y][x] = this.state.modulo-1;
+          this.renderState();
+        },
+        handleModuloChange: function(event) {
+          var modulo = parseInt(event.target.value);
+          if (modulo == NaN) // FIXME
+             modulo = 2;
+          //var modulo = event.target.value;
+          this.setState({modulo: modulo});
+        },
+        handleSizeChange: function(event) {
+          var stateSize = parseInt(event.target.value);
+          var state0 = createArray(stateSize, stateSize);
+          var state1 = createArray(stateSize, stateSize);
+          for (var i = 0; i < stateSize; i++)
+            for (var j = 0; j < stateSize; j++) {
+               state0[i][j] = 0;
+               state1[i][j] = 0;
+            }
+          this.state.state = [state0, state1]
+          this.setState({stateSize: stateSize});
+        },
+        handleScaleChange: function(event) {
+          var scale = parseInt(event.target.value);
+          this.setState({scale: scale});
+        },
+        handleRuleSignChange: function(rule, sign) {
+          this.setState({rule: rule, sign: sign});
+        },
+        makeImage: function() {
+          var dataURL = this.refs.stateCanvas.getDOMNode().toDataURL();
+          this.setState({imageDisplay: "block", imageSrc: dataURL});
+          return false;
+        },
+        componentDidMount: function() {
+          console.log("componentWillMount %s", this.refs.stateCanvas);
+          this.renderState();
+        },
+        componentDidUpdate: function() {
+          console.log("componentDidUpdate: size=%d scale=%d", this.state.stateSize, this.state.scale);
+          this.renderState();
+        },
+        isDisplayableSize: function(size) {
+          var scale = this.state.scale;
+          return size*scale <= 4096 && size*scale > 1;
+        },
+        isDisplayableScale: function(scale) {
+          var stateSize = this.state.stateSize;
+          return stateSize*scale <= 4096 && stateSize*scale > 1;
+        },
+        render: function() {
+          var modulo = this.state.modulo;
+          var stateSize = this.state.stateSize;
+          var scale = this.state.scale;
+          var modpow = function(e) { return Math.pow(modulo, e) } 
+          return <div>
+            <div>
+                <label>Modulo: </label><input type="number" min="2" max="4096" value={modulo} onChange={this.handleModuloChange}/>
+                <label>Pattern: <select>
+                  <option onClick={this.emptyPattern}>Empty</option>
+                  <option onClick={this.digitReversalPattern}>Digit-reversal</option>
+                  <option onClick={this.diagonalPattern}>Diagonal</option>
+                  <option onClick={this.randomPattern}>Random</option>
+                </select></label>
+                <label>State size: <select onChange={this.handleSizeChange}>
+                  <HidingOption visible={this.isDisplayableSize(modpow(1))} value={modpow(1)} text={modpow(1)+" ("+modulo+"^1)"} />
+                  <HidingOption visible={this.isDisplayableSize(modpow(2))} value={modpow(2)} text={modpow(2)+" ("+modulo+"^2)"} />
+                  <HidingOption visible={this.isDisplayableSize(modpow(3))} value={modpow(3)} text={modpow(3)+" ("+modulo+"^3)"} />
+                  <HidingOption visible={this.isDisplayableSize(modpow(4))} value={modpow(4)} text={modpow(4)+" ("+modulo+"^4)"} />
+                  <HidingOption visible={this.isDisplayableSize(modpow(5))} value={modpow(5)} text={modpow(5)+" ("+modulo+"^5)"} />
+                  <HidingOption visible={this.isDisplayableSize(modpow(6))} value={modpow(6)} text={modpow(6)+" ("+modulo+"^6)"} />
+                  <HidingOption visible={this.isDisplayableSize(modpow(7))} value={modpow(7)} text={modpow(7)+" ("+modulo+"^7)"} />
+                  <HidingOption visible={this.isDisplayableSize(modpow(8))} value={modpow(8)} text={modpow(8)+" ("+modulo+"^8)"} />
+                  <HidingOption visible={this.isDisplayableSize(modpow(9))} value={modpow(9)} text={modpow(9)+" ("+modulo+"^9)"} />
+                  <HidingOption visible={this.isDisplayableSize(modpow(10))} value={modpow(10)} text={modpow(10)+" ("+modulo+"^10)"} />
+                  <HidingOption visible={this.isDisplayableSize(10)} value={10} text={"10"} />
+                  <HidingOption visible={this.isDisplayableSize(50)} value={50} text={"50"} />
+                  <HidingOption visible={this.isDisplayableSize(100)} value={100} text={"100"} />
+                  <HidingOption visible={this.isDisplayableSize(200)} value={200} text={"200"} />
+                </select></label>
+                <label>Scale: <select onChange={this.handleScaleChange}>
+                  <HidingOption visible={this.isDisplayableScale(1)} value={1} text={"1x (view size = "+ 1*stateSize +")"} />
+                  <HidingOption visible={this.isDisplayableScale(2)} value={2} text={"2x (view size = "+ 2*stateSize +")"} />
+                  <HidingOption visible={this.isDisplayableScale(3)} value={3} text={"3x (view size = "+ 3*stateSize +")"} />
+                  <HidingOption visible={this.isDisplayableScale(4)} value={4} text={"4x (view size = "+ 4*stateSize +")"} />
+                  <HidingOption visible={this.isDisplayableScale(5)} value={5} text={"5x (view size = "+ 5*stateSize +")"} />
+                  <HidingOption visible={this.isDisplayableScale(6)} value={6} text={"6x (view size = "+ 6*stateSize +")"} />
+                  <HidingOption visible={this.isDisplayableScale(7)} value={7} text={"7x (view size = "+ 7*stateSize +")"} />
+                  <HidingOption visible={this.isDisplayableScale(8)} value={8} text={"8x (view size = "+ 8*stateSize +")"} />
+                  <HidingOption visible={this.isDisplayableScale(9)} value={9} text={"9x (view size = "+ 9*stateSize +")"} />
+                  <HidingOption visible={this.isDisplayableScale(10)} value={10} text={"10x (view size = "+ 10*stateSize +")"} />
+                  <HidingOption visible={this.isDisplayableScale(15)} value={15} text={"15x (view size = "+ 11*stateSize +")"} />
+                  <HidingOption visible={this.isDisplayableScale(20)} value={20} text={"20x (view size = "+ 12*stateSize +")"} />
+                  <HidingOption visible={this.isDisplayableScale(25)} value={25} text={"25x (view size = "+ 13*stateSize +")"} />
+                  <HidingOption visible={this.isDisplayableScale(30)} value={30} text={"30x (view size = "+ 14*stateSize +")"} />
+                  <HidingOption visible={this.isDisplayableScale(40)} value={40} text={"40x (view size = "+ 15*stateSize +")"} />
+                </select></label>
+                <div>
+                  <input type="submit" onClick={this.applyRule} value="Apply rule"/><span>Step: {this.state.ruleStep}</span>
+                </div>
+            </div>
+            <div className="container">
+              <div className="rule-column">
+                 <RuleSignEditor rule={this.state.rule} sign={this.state.sign} onChange={this.handleRuleSignChange} />
+              </div>
+              <div className="view-column">
+                <canvas ref="stateCanvas" width={stateSize*scale} height={stateSize*scale} onMouseDown={this.handleCanvaseMouseDown} >
+                </canvas>
+              </div>
+              <div className="clear"></div>
+            <div>
+              <input type="submit" onClick={this.makeImage} value="Make image"/>
+              <div style={{display: this.state.imageDisplay}}>
+                Right click on image to save<br/>
+                <img src={this.state.imageSrc} alt="Right click to save me" /></div>
+            </div>
+          </div>
+          </div>;
+          
+        }
+      });
+      React.renderComponent(
+          <ReactApplication />,
+          document.getElementById('container')
+      );
+    </script>
+    <footer class="footer">
+      <p>Copyright © 2014 Sergey Shishmintzev. Code released under <a href="https://github.com/x-or/tdacawam/blob/gh-pages/LICENSE">the MIT license</a>.</p>
+      <p>GitHub <a href="http://github.com/x-or/tdacawam">Project</a></p>
+    </footer>
+  </body>
+</html>
+
