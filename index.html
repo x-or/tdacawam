@@ -85,7 +85,7 @@
         return arr;
       }      
  
-      function digitReverse(n, digitCount, base) {
+      function digitalReverse(n, digitCount, base) {
         var r = 0;
         for (var i = 0; i < digitCount; i++) {
           r = base*r + n % base;
@@ -106,9 +106,9 @@
         return r;
       }
 
-      assert(digitReverse(1 * Math.pow(3, 2) + 0 * Math.pow(3, 1) + 0 * Math.pow(3, 0), 3, 3) === 0 * Math.pow(3, 2) + 0 * Math.pow(3, 1) + 1 * Math.pow(3, 0), "digitReverse 1")
-      assert(digitReverse(2 * Math.pow(3, 2) + 0 * Math.pow(3, 1) + 1 * Math.pow(3, 0), 3, 3) === 1 * Math.pow(3, 2) + 0 * Math.pow(3, 1) + 2 * Math.pow(3, 0), "digitReverse 2")
-      assert(digitReverse(0 * Math.pow(3, 2) + 1 * Math.pow(3, 1) + 2 * Math.pow(3, 0), 3, 3) === 2 * Math.pow(3, 2) + 1 * Math.pow(3, 1) + 0 * Math.pow(3, 0), "digitReverse 3")
+      assert(digitalReverse(1 * Math.pow(3, 2) + 0 * Math.pow(3, 1) + 0 * Math.pow(3, 0), 3, 3) === 0 * Math.pow(3, 2) + 0 * Math.pow(3, 1) + 1 * Math.pow(3, 0), "digitalReverse 1")
+      assert(digitalReverse(2 * Math.pow(3, 2) + 0 * Math.pow(3, 1) + 1 * Math.pow(3, 0), 3, 3) === 1 * Math.pow(3, 2) + 0 * Math.pow(3, 1) + 2 * Math.pow(3, 0), "digitalReverse 2")
+      assert(digitalReverse(0 * Math.pow(3, 2) + 1 * Math.pow(3, 1) + 2 * Math.pow(3, 0), 3, 3) === 2 * Math.pow(3, 2) + 1 * Math.pow(3, 1) + 0 * Math.pow(3, 0), "digitalReverse 3")
       
       function render(state, state_size, canvas, color, scale){
         var context = canvas.getContext('2d');
@@ -411,7 +411,7 @@
           this.clearState();
           var digitCount = Math.round(Math.log(stateSize) / Math.log(modulo));
           for (var i = 0; i < stateSize; i++)
-            state[i][digitReverse(i, digitCount, modulo)] = modulo-1;
+            state[i][digitalReverse(i, digitCount, modulo)] = modulo-1;
           this.renderState();
         },
         diagonalPattern: function() {
@@ -498,8 +498,8 @@
           var ri = new Array(stateSize);
           var rj = new Array(stateSize);
           for (var n = 0; n < stateSize; n++) {
-            ri[n] = permutate.rows ? digitReverse(n, digitCount, modulo) : n;
-            rj[n] = permutate.cols ? digitReverse(n, digitCount, modulo) : n;
+            ri[n] = permutate.rows ? digitalReverse(n, digitCount, modulo) : n;
+            rj[n] = permutate.cols ? digitalReverse(n, digitCount, modulo) : n;
           }
           for (var i = 0; i < stateSize; i++)
             for (var j = 0; j < stateSize; j++)
