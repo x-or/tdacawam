@@ -489,6 +489,32 @@
           this.setState({ruleStep: this.state.ruleStep + 1});
           return false;
         },
+        digitReversalPermutation: function(permutate) {
+          var modulo = this.state.modulo;
+          var stateSize = this.state.stateSize;
+          var digitCount = Math.round(Math.log(stateSize)/Math.log(modulo));
+          var state0 = this.state.state[this.state.curState];
+          var state1 = this.state.state[this.state.curState ^ 1];
+          var ri = new Array(stateSize);
+          var rj = new Array(stateSize);
+          for (var n = 0; n < stateSize; n++) {
+            ri[n] = permutate.rows ? digitReverse(n, digitCount, modulo) : n;
+            rj[n] = permutate.cols ? digitReverse(n, digitCount, modulo) : n;
+          }
+          for (var i = 0; i < stateSize; i++)
+            for (var j = 0; j < stateSize; j++)
+              state1[ri[i]][rj[j]] = state0[i][j];
+          this.state.curState ^= 1;
+          this.renderState();
+        },
+        digitReversalPermutationRowsCols: function(event) {
+          this.digitReversalPermutation({rows: true, cols: true});
+          return false;
+        },
+        digitReversalPermutationRows: function(event) {
+          this.digitReversalPermutation({rows: true, cols: false});
+          return false;
+        },
         handleCanvaseMouseDown: function(event) {
           var pos = getMousePos(this.refs.stateCanvas.getDOMNode(), event);
           var scale = this.state.scale;
@@ -596,6 +622,8 @@
                 </select></label>
                 <div>
                   <input type="submit" onClick={this.applyRule} value="Apply rule"/><span>Step: {this.state.ruleStep}</span>
+                  <input type="submit" onClick={this.digitReversalPermutationRowsCols} value="DRP(x,y)" title="Digit-Reversal Permutation (rows and columns)" />
+                  <input type="submit" onClick={this.digitReversalPermutationRows} value="DRP(y)" title="Digit-Reversal Permutation (rows only)"/>
                 </div>
             </div>
             <div className="container">
