@@ -442,7 +442,7 @@
               state[i][j] = Math.floor(Math.random() * modulo);
           this.renderState();
         },
-        getPatternNames: function() {
+        getPatterns: function() {
           return {
             "empty": this.emptyPattern,
             "digit-reversal": this.digitReversalPattern,
@@ -451,7 +451,7 @@
           }
         },
         setPattern: function(patternName) {
-          var requestedPattern = this.getPatternNames()[patternName];
+          var requestedPattern = this.getPatterns()[patternName];
           if (requestedPattern) {
             requestedPattern();
             this.renderState();
