@@ -612,6 +612,8 @@
                     }, this)}
                 </select></label>
                 <label>State size: <select onChange={this.handleSizeChange} value={stateSize}>
+                  // Will selected when stateSize size is non-standard (e.g. size defined by query_string)
+                  <option disabled={true} value={stateSize}>{"Actual size is "+stateSize}</option>
                   {stateSizes.map(function(size) { 
                       return <HidingOption 
                         visible={this.isDisplayableSize(size.value)} 
