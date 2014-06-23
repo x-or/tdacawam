@@ -60,6 +60,8 @@
       var maxCanvasSize = 4096;
       var maxModulo = 4096;
 
+      var IndicatorStyle = {false: {}, true: {backgroundColor: "#fe0"}};
+
       // http://javascript.about.com/od/problemsolving/a/modulobug.htm
       Number.prototype.mod = function(n) {
         return ((this%n)+n)%n;
@@ -374,6 +376,8 @@
             sign: parseIntInRange(queryString['sign'], 0, 511) || 0,
             imageDisplay: "none",
             imageSrc: "",
+            isDigitReversalPermutationRowsWasApplied: false,
+            isDigitReversalPermutationRowsColsWasApplied: false,
           };
         },
         clearState: function() {
@@ -385,7 +389,12 @@
                state0[i][j] = 0;
                state1[i][j] = 0;
             }
-          this.setState({ruleStep: 0});
+          this.setState({
+            ruleStep: 0,
+            isDigitReversalPermutationRowsWasApplied: false,
+            isDigitReversalPermutationRowsColsWasApplied: false,
+          });
+          return false;
         },
         renderState: function() {
           var modulo = this.state.modulo;
@@ -509,10 +518,12 @@
         },
         digitReversalPermutationRowsCols: function(event) {
           this.digitReversalPermutation({rows: true, cols: true});
+          this.setState({isDigitReversalPermutationRowsColsWasApplied: !this.state.isDigitReversalPermutationRowsColsWasApplied});
           return false;
         },
         digitReversalPermutationRows: function(event) {
           this.digitReversalPermutation({rows: true, cols: false});
+          this.setState({isDigitReversalPermutationRowsWasApplied: !this.state.isDigitReversalPermutationRowsWasApplied});
           return false;
         },
         handleCanvaseMouseDown: function(event) {
@@ -607,8 +618,12 @@
                 </select></label>
                 <div>
                   <input type="submit" onClick={this.applyRule} value="Apply rule"/><span>Step: {this.state.ruleStep}</span>
-                  <input type="submit" onClick={this.digitReversalPermutationRowsCols} value="DRP(x,y)" title="Digit-Reversal Permutation (rows and columns)" />
-                  <input type="submit" onClick={this.digitReversalPermutationRows} value="DRP(y)" title="Digit-Reversal Permutation (rows only)"/>
+                  <input style={IndicatorStyle[this.state.isDigitReversalPermutationRowsColsWasApplied]} 
+                         type="submit" onClick={this.digitReversalPermutationRowsCols} 
+                         value="DRP(x,y)" title="Digit-Reversal Permutation (rows and columns)" />
+                  <input style={IndicatorStyle[this.state.isDigitReversalPermutationRowsWasApplied]}
+                         type="submit" onClick={this.digitReversalPermutationRows} 
+                         value="DRP(y)" title="Digit-Reversal Permutation (rows only)"/>
                 </div>
             </div>
             <div className="container">
