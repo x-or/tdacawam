@@ -452,9 +452,10 @@
         },
         setPattern: function(patternName) {
           var requestedPattern = this.getPatternNames()[patternName];
-          if (requestedPattern)
+          if (requestedPattern) {
             requestedPattern();
-          this.renderState();
+            this.renderState();
+          }
         },
         applyRule: function() {
           var modulo = this.state.modulo;
