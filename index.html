@@ -450,6 +450,12 @@
             "diagonal": this.diagonalPattern
           }
         },
+        setPattern: function(patternName) {
+          var requestedPattern = this.getPatternNames()[patternName];
+          if (requestedPattern)
+            requestedPattern();
+          this.renderState();
+        },
         applyRule: function() {
           var modulo = this.state.modulo;
           var stateSize = this.state.stateSize;
@@ -566,10 +572,7 @@
         },
         componentDidMount: function() {
           console.log("componentWillMount %s", this.refs.stateCanvas);
-          var requestedPattern = this.getPatternNames()[queryString['pattern']];
-          if (requestedPattern)
-            requestedPattern();
-          this.renderState();
+          this.setPattern(queryString['pattern']);
         },
         componentDidUpdate: function() {
           console.log("componentDidUpdate: size=%d scale=%d", this.state.stateSize, this.state.scale);
