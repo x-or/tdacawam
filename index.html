@@ -578,6 +578,7 @@
           var stateSize = this.state.stateSize;
           var scale = this.state.scale;
           var modpow = function(e) { return Math.pow(modulo, e) } 
+          var scales = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 30, 40];
           return <div>
             <div>
                 <label>Modulo: </label><input type="number" min="2" max={maxModulo} value={modulo} onChange={this.handleModuloChange}/>
@@ -604,21 +605,12 @@
                   <HidingOption visible={this.isDisplayableSize(200)} value={200} text={"200"} />
                 </select></label>
                 <label>Scale: <select onChange={this.handleScaleChange}>
-                  <HidingOption visible={this.isDisplayableScale(1)} value={1} text={"1x (view size = "+ 1*stateSize +")"} />
-                  <HidingOption visible={this.isDisplayableScale(2)} value={2} text={"2x (view size = "+ 2*stateSize +")"} />
-                  <HidingOption visible={this.isDisplayableScale(3)} value={3} text={"3x (view size = "+ 3*stateSize +")"} />
-                  <HidingOption visible={this.isDisplayableScale(4)} value={4} text={"4x (view size = "+ 4*stateSize +")"} />
-                  <HidingOption visible={this.isDisplayableScale(5)} value={5} text={"5x (view size = "+ 5*stateSize +")"} />
-                  <HidingOption visible={this.isDisplayableScale(6)} value={6} text={"6x (view size = "+ 6*stateSize +")"} />
-                  <HidingOption visible={this.isDisplayableScale(7)} value={7} text={"7x (view size = "+ 7*stateSize +")"} />
-                  <HidingOption visible={this.isDisplayableScale(8)} value={8} text={"8x (view size = "+ 8*stateSize +")"} />
-                  <HidingOption visible={this.isDisplayableScale(9)} value={9} text={"9x (view size = "+ 9*stateSize +")"} />
-                  <HidingOption visible={this.isDisplayableScale(10)} value={10} text={"10x (view size = "+ 10*stateSize +")"} />
-                  <HidingOption visible={this.isDisplayableScale(15)} value={15} text={"15x (view size = "+ 11*stateSize +")"} />
-                  <HidingOption visible={this.isDisplayableScale(20)} value={20} text={"20x (view size = "+ 12*stateSize +")"} />
-                  <HidingOption visible={this.isDisplayableScale(25)} value={25} text={"25x (view size = "+ 13*stateSize +")"} />
-                  <HidingOption visible={this.isDisplayableScale(30)} value={30} text={"30x (view size = "+ 14*stateSize +")"} />
-                  <HidingOption visible={this.isDisplayableScale(40)} value={40} text={"40x (view size = "+ 15*stateSize +")"} />
+                  {scales.map(function(scale) { 
+                      return <HidingOption 
+                        visible={this.isDisplayableScale(scale)} 
+                        value={scale} 
+                        text={scale+"x (view size = "+ scale*stateSize +")"} />;
+                    }, this)}
                 </select></label>
                 <div>
                   <input type="submit" onClick={this.applyRule} value="Apply rule"/><span>Step: {this.state.ruleStep}</span>
