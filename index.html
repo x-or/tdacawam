@@ -577,7 +577,8 @@
           var modulo = this.state.modulo;
           var stateSize = this.state.stateSize;
           var scale = this.state.scale;
-          var modpow = function(e) { return Math.pow(modulo, e) } 
+          var stateSizes = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(function(power) { return {value: Math.pow(modulo, power), power: power}; }).concat(
+                           [10, 50, 100, 200].map(function(size) { return {value: size}; }));
           var scales = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 30, 40];
           return <div>
             <div>
@@ -589,20 +590,12 @@
                   <option onClick={this.randomPattern}>Random</option>
                 </select></label>
                 <label>State size: <select onChange={this.handleSizeChange}>
-                  <HidingOption visible={this.isDisplayableSize(modpow(1))} value={modpow(1)} text={modpow(1)+" ("+modulo+"^1)"} />
-                  <HidingOption visible={this.isDisplayableSize(modpow(2))} value={modpow(2)} text={modpow(2)+" ("+modulo+"^2)"} />
-                  <HidingOption visible={this.isDisplayableSize(modpow(3))} value={modpow(3)} text={modpow(3)+" ("+modulo+"^3)"} />
-                  <HidingOption visible={this.isDisplayableSize(modpow(4))} value={modpow(4)} text={modpow(4)+" ("+modulo+"^4)"} />
-                  <HidingOption visible={this.isDisplayableSize(modpow(5))} value={modpow(5)} text={modpow(5)+" ("+modulo+"^5)"} />
-                  <HidingOption visible={this.isDisplayableSize(modpow(6))} value={modpow(6)} text={modpow(6)+" ("+modulo+"^6)"} />
-                  <HidingOption visible={this.isDisplayableSize(modpow(7))} value={modpow(7)} text={modpow(7)+" ("+modulo+"^7)"} />
-                  <HidingOption visible={this.isDisplayableSize(modpow(8))} value={modpow(8)} text={modpow(8)+" ("+modulo+"^8)"} />
-                  <HidingOption visible={this.isDisplayableSize(modpow(9))} value={modpow(9)} text={modpow(9)+" ("+modulo+"^9)"} />
-                  <HidingOption visible={this.isDisplayableSize(modpow(10))} value={modpow(10)} text={modpow(10)+" ("+modulo+"^10)"} />
-                  <HidingOption visible={this.isDisplayableSize(10)} value={10} text={"10"} />
-                  <HidingOption visible={this.isDisplayableSize(50)} value={50} text={"50"} />
-                  <HidingOption visible={this.isDisplayableSize(100)} value={100} text={"100"} />
-                  <HidingOption visible={this.isDisplayableSize(200)} value={200} text={"200"} />
+                  {stateSizes.map(function(size) { 
+                      return <HidingOption 
+                        visible={this.isDisplayableSize(size.value)} 
+                        value={size.value} 
+                        text={size.power ? size.value+" ("+modulo+"^"+size.power+")" : size.value } />; 
+                    }, this)}
                 </select></label>
                 <label>Scale: <select onChange={this.handleScaleChange}>
                   {scales.map(function(scale) { 
