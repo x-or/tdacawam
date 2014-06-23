@@ -599,7 +599,7 @@
                   <option onClick={this.diagonalPattern}>Diagonal</option>
                   <option onClick={this.randomPattern}>Random</option>
                 </select></label>
-                <label>State size: <select onChange={this.handleSizeChange}>
+                <label>State size: <select onChange={this.handleSizeChange} value={stateSize}>
                   {stateSizes.map(function(size) { 
                       return <HidingOption 
                         visible={this.isDisplayableSize(size.value)} 
