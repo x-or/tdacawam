@@ -607,7 +607,7 @@
                         text={size.power ? size.value+" ("+modulo+"^"+size.power+")" : size.value } />; 
                     }, this)}
                 </select></label>
-                <label>Scale: <select onChange={this.handleScaleChange}>
+                <label>Scale: <select onChange={this.handleScaleChange} value={scale}>
                   {scales.map(function(scale) { 
                       return <HidingOption 
                         visible={this.isDisplayableScale(scale)} 
