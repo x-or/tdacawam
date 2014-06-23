@@ -442,12 +442,15 @@
               state[i][j] = Math.floor(Math.random() * modulo);
           this.renderState();
         },
+        getPatternNames: function() {
+          return ["empty", "digit-reversal", "random", "diagonal"];
+        },
         getPatterns: function() {
           return {
-            "empty": {apply: this.emptyPattern},
-            "digit-reversal": {apply: this.digitReversalPattern},
-            "random": {apply: this.randomPattern},
-            "diagonal": {apply: this.diagonalPattern}
+            "empty": {title: "Empty", apply: this.emptyPattern},
+            "digit-reversal": {title: "Digit-Reversal", apply: this.digitReversalPattern},
+            "random": {title: "Random", apply: this.randomPattern},
+            "diagonal": {title: "Diagonal", apply: this.diagonalPattern}
           }
         },
         setPattern: function(patternName) {
@@ -547,6 +550,9 @@
           //var modulo = event.target.value;
           this.setState({modulo: modulo});
         },
+        handlePatternChange: function(event) {
+          this.setPattern(event.target.value);
+        },
         handleSizeChange: function(event) {
           var stateSize = parseInt(event.target.value);
           var state0 = createArray(stateSize, stateSize);
@@ -597,11 +603,11 @@
           return <div>
             <div>
                 <label>Modulo: </label><input type="number" min="2" max={maxModulo} value={modulo} onChange={this.handleModuloChange}/>
-                <label>Pattern: <select>
-                  <option onClick={this.emptyPattern}>Empty</option>
-                  <option onClick={this.digitReversalPattern}>Digit-reversal</option>
-                  <option onClick={this.diagonalPattern}>Diagonal</option>
-                  <option onClick={this.randomPattern}>Random</option>
+                <label>Pattern: <select onChange={this.handlePatternChange}>
+                  {this.getPatternNames().map(function(patternName) { 
+                      var pattern = this.getPatterns()[patternName]; 
+                      return <option value={patternName}>{pattern.title}</option>;
+                    }, this)}
                 </select></label>
                 <label>State size: <select onChange={this.handleSizeChange} value={stateSize}>
                   {stateSizes.map(function(size) { 
