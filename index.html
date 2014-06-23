@@ -372,6 +372,7 @@
             curState: 0,
             modulo: parseIntInRange(queryString['modulo'], 2, maxModulo) || 2,
             ruleStep: 0,
+            patternName: queryString['pattern'] || "empty",
             rule: parseIntInRange(queryString['rule'], 0, 511) || 15,
             sign: parseIntInRange(queryString['sign'], 0, 511) || 0,
             imageDisplay: "none",
@@ -456,6 +457,7 @@
         setPattern: function(patternName) {
           var requestedPattern = this.getPatterns()[patternName];
           if (requestedPattern) {
+            this.setState({patternName: patternName});
             requestedPattern.apply();
             this.renderState();
           }
@@ -579,7 +581,7 @@
         },
         componentDidMount: function() {
           console.log("componentWillMount %s", this.refs.stateCanvas);
-          this.setPattern(queryString['pattern']);
+          this.setPattern(this.state.patternName);
         },
         componentDidUpdate: function() {
           console.log("componentDidUpdate: size=%d scale=%d", this.state.stateSize, this.state.scale);
@@ -603,7 +605,7 @@
           return <div>
             <div>
                 <label>Modulo: </label><input type="number" min="2" max={maxModulo} value={modulo} onChange={this.handleModuloChange}/>
-                <label>Pattern: <select onChange={this.handlePatternChange}>
+                <label>Pattern: <select onChange={this.handlePatternChange} value={this.state.patternName}>
                   {this.getPatternNames().map(function(patternName) { 
                       var pattern = this.getPatterns()[patternName]; 
                       return <option value={patternName}>{pattern.title}</option>;
