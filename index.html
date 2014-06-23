@@ -444,16 +444,16 @@
         },
         getPatterns: function() {
           return {
-            "empty": this.emptyPattern,
-            "digit-reversal": this.digitReversalPattern,
-            "random": this.randomPattern,
-            "diagonal": this.diagonalPattern
+            "empty": {apply: this.emptyPattern},
+            "digit-reversal": {apply: this.digitReversalPattern},
+            "random": {apply: this.randomPattern},
+            "diagonal": {apply: this.diagonalPattern}
           }
         },
         setPattern: function(patternName) {
           var requestedPattern = this.getPatterns()[patternName];
           if (requestedPattern) {
-            requestedPattern();
+            requestedPattern.apply();
             this.renderState();
           }
         },
