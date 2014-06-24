@@ -394,6 +394,7 @@
             ruleStep: 0,
             isDigitReversalPermutationRowsWasApplied: false,
             isDigitReversalPermutationRowsColsWasApplied: false,
+            // Warning: may be reset same in the handleSizeChange
           });
           return false;
         },
@@ -564,7 +565,13 @@
                state1[i][j] = 0;
             }
           this.state.state = [state0, state1]
-          this.setState({stateSize: stateSize, patternName: "empty"});
+          this.setState({
+            stateSize: stateSize, 
+            patternName: "empty",
+            ruleStep: 0,
+            isDigitReversalPermutationRowsWasApplied: false,
+            isDigitReversalPermutationRowsColsWasApplied: false
+          });
         },
         handleScaleChange: function(event) {
           var scale = parseInt(event.target.value);
