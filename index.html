@@ -443,22 +443,20 @@
               state[i][j] = Math.floor(Math.random() * modulo);
           this.renderState();
         },
-        getPatternNames: function() {
-          return ["empty", "digit-reversal", "random", "diagonal"];
-        },
-        getPatterns: function() {
-          return {
-            "empty": {title: "Empty", apply: this.emptyPattern},
-            "digit-reversal": {title: "Digit-Reversal", apply: this.digitReversalPattern},
-            "random": {title: "Random", apply: this.randomPattern},
-            "diagonal": {title: "Diagonal", apply: this.diagonalPattern}
-          };
+        statics: {
+          patternNames: ["empty", "digit-reversal", "random", "diagonal"],
+          patterns: {
+            "empty": {title: "Empty", apply: function() { this.emptyPattern(); }},
+            "digit-reversal": {title: "Digit-Reversal", apply: function() { this.digitReversalPattern(); }},
+            "random": {title: "Random", apply: function() { this.randomPattern(); }},
+            "diagonal": {title: "Diagonal", apply: function() { this.diagonalPattern(); }}
+          }
         },
         setPattern: function(patternName) {
-          var requestedPattern = this.getPatterns()[patternName];
+          var requestedPattern = ReactApplication.patterns[patternName];
           if (requestedPattern) {
             this.setState({patternName: patternName});
-            requestedPattern.apply();
+            requestedPattern.apply.bind(this)();
           }
         },
         applyRule: function() {
@@ -609,8 +607,8 @@
                 <label>Pattern: <select onChange={this.handlePatternChange} value={this.state.patternName}>
                   // Will selected when pattern will be altered
                   <option disabled={true} value="unknown">(unknown)</option>
-                  {this.getPatternNames().map(function(patternName) { 
-                      var pattern = this.getPatterns()[patternName]; 
+                  {ReactApplication.patternNames.map(function(patternName) { 
+                      var pattern = ReactApplication.patterns[patternName]; 
                       return <option value={patternName}>{pattern.title}</option>;
                     }, this)}
                 </select></label>
