@@ -564,7 +564,7 @@
                state1[i][j] = 0;
             }
           this.state.state = [state0, state1]
-          this.setState({stateSize: stateSize});
+          this.setState({stateSize: stateSize, patternName: "empty"});
         },
         handleScaleChange: function(event) {
           var scale = parseInt(event.target.value);
