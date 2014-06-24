@@ -467,15 +467,15 @@
           var rule = this.state.rule;
           var sign = this.state.sign;
           var v = 0;
-          var r1 = ((this.state.rule & 1) != 0 ? 1 : 0) * ((this.state.sign & 1) != 0 ? -1 : 1);
-          var r2 = ((this.state.rule & 2) != 0 ? 1 : 0) * ((this.state.sign & 2) != 0 ? -1 : 1);
-          var r4 = ((this.state.rule & 4) != 0 ? 1 : 0) * ((this.state.sign & 4) != 0 ? -1 : 1);
-          var r8 = ((this.state.rule & 8) != 0 ? 1 : 0) * ((this.state.sign & 8) != 0 ? -1 : 1);
-          var r16 = ((this.state.rule & 16) != 0 ? 1 : 0) * ((this.state.sign & 16) != 0 ? -1 : 1);
-          var r32 = ((this.state.rule & 32) != 0 ? 1 : 0) * ((this.state.sign & 32) != 0 ? -1 : 1);
-          var r64 = ((this.state.rule & 64) != 0 ? 1 : 0) * ((this.state.sign & 64) != 0 ? -1 : 1);
-          var r128 = ((this.state.rule & 128) != 0 ? 1 : 0) * ((this.state.sign & 128) != 0 ? -1 : 1);
-          var r256 = ((this.state.rule & 256) != 0 ? 1 : 0) * ((this.state.sign & 256) != 0 ? -1 : 1);
+          var r1 = ((rule & 1) != 0 ? 1 : 0) * ((sign & 1) != 0 ? -1 : 1);
+          var r2 = ((rule & 2) != 0 ? 1 : 0) * ((sign & 2) != 0 ? -1 : 1);
+          var r4 = ((rule & 4) != 0 ? 1 : 0) * ((sign & 4) != 0 ? -1 : 1);
+          var r8 = ((rule & 8) != 0 ? 1 : 0) * ((sign & 8) != 0 ? -1 : 1);
+          var r16 = ((rule & 16) != 0 ? 1 : 0) * ((sign & 16) != 0 ? -1 : 1);
+          var r32 = ((rule & 32) != 0 ? 1 : 0) * ((sign & 32) != 0 ? -1 : 1);
+          var r64 = ((rule & 64) != 0 ? 1 : 0) * ((sign & 64) != 0 ? -1 : 1);
+          var r128 = ((rule & 128) != 0 ? 1 : 0) * ((sign & 128) != 0 ? -1 : 1);
+          var r256 = ((rule & 256) != 0 ? 1 : 0) * ((sign & 256) != 0 ? -1 : 1);
           var i0 = 0, i1 = 0, il = 0, j0 = 0, j1 = 0, jl = 0;
           var state_il, state_i0, state_i1;
           for (var i0 = 0; i0 < stateSize; i0++) {
