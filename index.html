@@ -505,7 +505,7 @@
           }
           this.state.curState ^= 1;
           this.renderState();
-          this.setState({ruleStep: this.state.ruleStep + 1});
+          this.setState({ruleStep: this.state.ruleStep + 1, patternName: "unknown"});
           return false;
         },
         digitReversalPermutation: function(permutate) {
@@ -525,6 +525,7 @@
               state1[ri[i]][rj[j]] = state0[i][j];
           this.state.curState ^= 1;
           this.renderState();
+          this.setState({patternName: "unknown"});
         },
         digitReversalPermutationRowsCols: function(event) {
           this.digitReversalPermutation({rows: true, cols: true});
@@ -543,6 +544,7 @@
           var y = Math.floor(pos.y/scale);
           this.state.state[this.state.curState][y][x] = this.state.modulo-1;
           this.renderState();
+          this.setState({patternName: "unknown"});
         },
         handleModuloChange: function(event) {
           var modulo = parseInt(event.target.value);
@@ -605,6 +607,8 @@
             <div>
                 <label>Modulo: </label><input type="number" min="2" max={maxModulo} value={modulo} onChange={this.handleModuloChange}/>
                 <label>Pattern: <select onChange={this.handlePatternChange} value={this.state.patternName}>
+                  // Will selected when pattern will be altered
+                  <option disabled={true} value="unknown">(unknown)</option>
                   {this.getPatternNames().map(function(patternName) { 
                       var pattern = this.getPatterns()[patternName]; 
                       return <option value={patternName}>{pattern.title}</option>;
