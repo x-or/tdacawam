@@ -550,7 +550,7 @@
           if (modulo == NaN) // FIXME
              modulo = 2;
           //var modulo = event.target.value;
-          this.setState({modulo: modulo});
+          this.setState({modulo: modulo, patternName: "unknown"});
         },
         handlePatternChange: function(event) {
           this.setPattern(event.target.value);
