@@ -59,6 +59,7 @@
     <script>
       var maxCanvasSize = 4096;
       var maxModulo = 4096;
+      var maxBase = 4096;
 
       var IndicatorStyle = {false: {}, true: {backgroundColor: "#fe0"}};
 
@@ -370,6 +371,7 @@
             scale: parseIntInRange(queryString['scale'], 1, Math.floor(maxCanvasSize/stateSize)) || 1,
             state: [state0, state1], 
             curState: 0,
+            base: parseIntInRange(queryString['base'], 2, maxBase) || 2,
             modulo: parseIntInRange(queryString['modulo'], 2, maxModulo) || 2,
             ruleStep: 0,
             patternName: queryString['pattern'] || "empty",
@@ -416,13 +418,14 @@
           this.renderState();
         },
         digitReversalPattern: function() {
+          var base = this.state.base;
           var modulo = this.state.modulo;
           var stateSize = this.state.stateSize;
           var state = this.state.state[this.state.curState];
           this.clearState();
-          var digitCount = Math.round(Math.log(stateSize) / Math.log(modulo));
+          var digitCount = Math.round(Math.log(stateSize) / Math.log(base));
           for (var i = 0; i < stateSize; i++)
-            state[i][digitalReverse(i, digitCount, modulo)] = modulo-1;
+            state[i][digitalReverse(i, digitCount, base)] = modulo-1;
           this.renderState();
         },
         diagonalPattern: function() {
@@ -519,16 +522,16 @@
           return false;
         },
         digitReversalPermutation: function(permutate) {
-          var modulo = this.state.modulo;
+          var base = this.state.base;
           var stateSize = this.state.stateSize;
-          var digitCount = Math.round(Math.log(stateSize)/Math.log(modulo));
+          var digitCount = Math.round(Math.log(stateSize)/Math.log(base));
           var state0 = this.state.state[this.state.curState];
           var state1 = this.state.state[this.state.curState ^ 1];
           var ri = new Array(stateSize);
           var rj = new Array(stateSize);
           for (var n = 0; n < stateSize; n++) {
-            ri[n] = permutate.rows ? digitalReverse(n, digitCount, modulo) : n;
-            rj[n] = permutate.cols ? digitalReverse(n, digitCount, modulo) : n;
+            ri[n] = permutate.rows ? digitalReverse(n, digitCount, base) : n;
+            rj[n] = permutate.cols ? digitalReverse(n, digitCount, base) : n;
           }
           for (var i = 0; i < stateSize; i++)
             for (var j = 0; j < stateSize; j++)
@@ -562,6 +565,12 @@
              modulo = 2;
           //var modulo = event.target.value;
           this.setState({modulo: modulo, patternName: "unknown"});
+        },
+        handleBaseChange: function(event) {
+          var base = parseInt(event.target.value);
+          if (base == NaN) // FIXME
+             base = 2;
+          this.setState({base: base, patternName: "unknown"});
         },
         handlePatternChange: function(event) {
           this.setPattern(event.target.value);
@@ -613,14 +622,16 @@
           return stateSize*scale <= maxCanvasSize && stateSize*scale > 1;
         },
         render: function() {
+          var base = this.state.base;
           var modulo = this.state.modulo;
           var stateSize = this.state.stateSize;
           var scale = this.state.scale;
-          var stateSizes = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(function(power) { return {value: Math.pow(modulo, power), power: power}; }).concat(
+          var stateSizes = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(function(power) { return {value: Math.pow(base, power), power: power}; }).concat(
                            [10, 50, 100, 200].map(function(size) { return {value: size}; }));
           var scales = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 30, 40];
           return <div>
             <div>
+                <label>Base: </label><input type="number" min="2" max={maxBase} value={base} onChange={this.handleBaseChange}/>
                 <label>Modulo: </label><input type="number" min="2" max={maxModulo} value={modulo} onChange={this.handleModuloChange}/>
                 <label>Pattern: <select onChange={this.handlePatternChange} value={this.state.patternName}>
                   // Will selected when pattern will be altered
@@ -637,7 +648,7 @@
                       return <HidingOption 
                         visible={this.isDisplayableSize(size.value)} 
                         value={size.value} 
-                        text={size.power ? size.value+" ("+modulo+"^"+size.power+")" : size.value } />; 
+                        text={size.power ? size.value+" ("+base+"^"+size.power+")" : size.value } />; 
                     }, this)}
                 </select></label>
                 <label>Scale: <select onChange={this.handleScaleChange} value={scale}>
