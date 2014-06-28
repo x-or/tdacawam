@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE HTML>
-<!-- 
+<!--
   ** Two-Dimensional Additive Cellular Automata with Modular Arithmetics (Web Application)
   ** Copyright (c) 2014 Sergey Shishmintzev
   ** License: MIT
@@ -16,7 +16,7 @@
         margin-top: none;
         margin-bottom: none;
       }
-      
+
       div.rule-column {
         /*width: 130px;*/
         float: left;
@@ -84,10 +84,10 @@
           var args = Array.prototype.slice.call(arguments, 1);
           while(i--) arr[length-1 - i] = createArray.apply(this, args);
         }
-  
+
         return arr;
-      }      
- 
+      }
+
       function digitalReverse(n, digitCount, base) {
         var r = 0;
         for (var i = 0; i < digitCount; i++) {
@@ -112,17 +112,17 @@
       assert(digitalReverse(1 * Math.pow(3, 2) + 0 * Math.pow(3, 1) + 0 * Math.pow(3, 0), 3, 3) === 0 * Math.pow(3, 2) + 0 * Math.pow(3, 1) + 1 * Math.pow(3, 0), "digitalReverse 1")
       assert(digitalReverse(2 * Math.pow(3, 2) + 0 * Math.pow(3, 1) + 1 * Math.pow(3, 0), 3, 3) === 1 * Math.pow(3, 2) + 0 * Math.pow(3, 1) + 2 * Math.pow(3, 0), "digitalReverse 2")
       assert(digitalReverse(0 * Math.pow(3, 2) + 1 * Math.pow(3, 1) + 2 * Math.pow(3, 0), 3, 3) === 2 * Math.pow(3, 2) + 1 * Math.pow(3, 1) + 0 * Math.pow(3, 0), "digitalReverse 3")
-      
+
       function render(state, state_size, canvas, color, scale){
         var context = canvas.getContext('2d');
-        
+
         var imageData = context.createImageData(state_size*scale, state_size*scale);
         var pixel = imageData.data;
 
         var off = 0;
         var val = 0;
         var pos = 0;
-        var state_row;  
+        var state_row;
         if (scale == 1) {
           for (var i = 0; i < state_size; i++) {
             state_row = state[i];
@@ -157,7 +157,7 @@
 
         context.putImageData(imageData, 0, 0);
       }
-      
+
       function getMousePos(canvas, evt){
         var obj = canvas;
         var top = 0;
@@ -208,7 +208,7 @@
         getDefaultProps: function() {
           return {disabled: 0};
         },
-        handleChange: function(event) { 
+        handleChange: function(event) {
           var value = 0;
           if (event.target.checked) {
             value = this.props.bit;
@@ -367,9 +367,9 @@
                state1[i][j] = 0;
             }
           return {
-            stateSize: stateSize, 
+            stateSize: stateSize,
             scale: parseIntInRange(queryString['scale'], 1, Math.floor(maxCanvasSize/stateSize)) || 1,
-            state: [state0, state1], 
+            state: [state0, state1],
             curState: 0,
             base: parseIntInRange(queryString['base'], 2, maxBase) || 2,
             modulo: parseIntInRange(queryString['modulo'], 2, maxModulo) || 2,
@@ -406,7 +406,7 @@
           var scale = this.state.scale;
           var state = this.state.state[this.state.curState];
           var color = new Array(modulo+1); // cache?
-          for (var i = 0; i < modulo; i++) { 
+          for (var i = 0; i < modulo; i++) {
             c = Math.floor(255*i/(modulo-1));
             color[i] = [c, c, c];
           }
@@ -461,7 +461,7 @@
           patternNames: ["empty", "digit-reversal", "random", "diagonal", "xor"],
           patterns: {
             "empty": {title: "Empty", apply: function() { this.emptyPattern(); }},
-            "digit-reversal": {title: "Digit-Reversal", apply: function() { this.digitReversalPattern(); }, 
+            "digit-reversal": {title: "Digit-Reversal", apply: function() { this.digitReversalPattern(); },
                                titlefn: function(base) { return base == 2 ? "Bit-Reversal" : "Digit-Reversal"; }},
             "random": {title: "Random", apply: function() { this.randomPattern(); }},
             "diagonal": {title: "Diagonal", apply: function() { this.diagonalPattern(); }},
@@ -513,7 +513,7 @@
                // +----+-----+-----+
                v = r64*state_il[jl] + r128*state_il[j0] + r256*state_il[j1] +
                    r32*state_i0[jl] +   r1*state_i0[j0] +   r2*state_i0[j1] +
-                   r16*state_i1[jl] +   r8*state_i1[j0] +   r4*state_i1[j1]; 
+                   r16*state_i1[jl] +   r8*state_i1[j0] +   r4*state_i1[j1];
                state1[i0][j0] = ((v%modulo)+modulo)%modulo;
             }
           }
@@ -587,7 +587,7 @@
             }
           this.state.state = [state0, state1]
           this.setState({
-            stateSize: stateSize, 
+            stateSize: stateSize,
             patternName: "empty",
             ruleStep: 0,
             isDigitReversalPermutationRowsWasApplied: false,
@@ -639,8 +639,8 @@
                 <label>Pattern: <select onChange={this.handlePatternChange} value={this.state.patternName}>
                   // Will selected when pattern will be altered
                   <option disabled={true} value="unknown">(unknown)</option>
-                  {ReactApplication.patternNames.map(function(patternName) { 
-                      var pattern = ReactApplication.patterns[patternName]; 
+                  {ReactApplication.patternNames.map(function(patternName) {
+                      var pattern = ReactApplication.patterns[patternName];
                       var title = pattern.titlefn ? pattern.titlefn(base) : pattern.title;
                       return <option value={patternName}>{title}</option>;
                     }, this)}
@@ -648,28 +648,28 @@
                 <label>State size: <select onChange={this.handleSizeChange} value={stateSize}>
                   // Will selected when stateSize size is non-standard (e.g. size defined by query_string)
                   <option disabled={true} value={stateSize}>{"Actual size is "+stateSize}</option>
-                  {stateSizes.map(function(size) { 
-                      return <HidingOption 
-                        visible={this.isDisplayableSize(size.value)} 
-                        value={size.value} 
-                        text={size.power ? size.value+" ("+base+"^"+size.power+")" : size.value } />; 
+                  {stateSizes.map(function(size) {
+                      return <HidingOption
+                        visible={this.isDisplayableSize(size.value)}
+                        value={size.value}
+                        text={size.power ? size.value+" ("+base+"^"+size.power+")" : size.value } />;
                     }, this)}
                 </select></label>
                 <label>Scale: <select onChange={this.handleScaleChange} value={scale}>
-                  {scales.map(function(scale) { 
-                      return <HidingOption 
-                        visible={this.isDisplayableScale(scale)} 
-                        value={scale} 
+                  {scales.map(function(scale) {
+                      return <HidingOption
+                        visible={this.isDisplayableScale(scale)}
+                        value={scale}
                         text={scale+"x (view size is "+ scale*stateSize +")"} />;
                     }, this)}
                 </select></label>
                 <div>
                   <input type="submit" onClick={this.applyRule} value="Apply rule"/><span>Step: {this.state.ruleStep}</span>
-                  <input style={IndicatorStyle[this.state.isDigitReversalPermutationRowsColsWasApplied]} 
-                         type="submit" onClick={this.digitReversalPermutationRowsCols} 
+                  <input style={IndicatorStyle[this.state.isDigitReversalPermutationRowsColsWasApplied]}
+                         type="submit" onClick={this.digitReversalPermutationRowsCols}
                          value={BorD+"RP(x,y)"} title={BitOrDigit+"-Reversal Permutation (rows and columns)"} />
                   <input style={IndicatorStyle[this.state.isDigitReversalPermutationRowsWasApplied]}
-                         type="submit" onClick={this.digitReversalPermutationRows} 
+                         type="submit" onClick={this.digitReversalPermutationRows}
                          value={BorD+"RP(y)"} title={BitOrDigit+"-Reversal Permutation (rows only)"}/>
                 </div>
             </div>
@@ -690,7 +690,7 @@
             </div>
           </div>
           </div>;
-          
+
         }
       });
       React.renderComponent(
