@@ -109,9 +109,10 @@
         return r;
       }
 
-      assert(digitalReverse(1 * Math.pow(3, 2) + 0 * Math.pow(3, 1) + 0 * Math.pow(3, 0), 3, 3) === 0 * Math.pow(3, 2) + 0 * Math.pow(3, 1) + 1 * Math.pow(3, 0), "digitalReverse 1")
-      assert(digitalReverse(2 * Math.pow(3, 2) + 0 * Math.pow(3, 1) + 1 * Math.pow(3, 0), 3, 3) === 1 * Math.pow(3, 2) + 0 * Math.pow(3, 1) + 2 * Math.pow(3, 0), "digitalReverse 2")
-      assert(digitalReverse(0 * Math.pow(3, 2) + 1 * Math.pow(3, 1) + 2 * Math.pow(3, 0), 3, 3) === 2 * Math.pow(3, 2) + 1 * Math.pow(3, 1) + 0 * Math.pow(3, 0), "digitalReverse 3")
+      assert(digitalReverse(123, 3, 10) == 321, "digitalReverse 123");
+      assert(digitalReverse(54321, 5, 10) == 12345, "digitalReverse 54321");
+      assert(digitalReverse(0x123, 3, 16) == 0x321, "digitalReverse 0x123");
+      assert(digitalReverse(0x54321, 5, 16) == 0x12345, "digitalReverse 0x54321");
 
       function render(state, state_size, canvas, color, scale){
         var context = canvas.getContext('2d');
