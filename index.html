@@ -578,8 +578,7 @@
         handlePatternChange: function(event) {
           this.setPattern(event.target.value);
         },
-        handleSizeChange: function(event) {
-          var stateSize = parseInt(event.target.value);
+        setStateSize: function(stateSize) {
           var state0 = createArray(stateSize, stateSize);
           var state1 = createArray(stateSize, stateSize);
           for (var i = 0; i < stateSize; i++)
@@ -587,14 +586,19 @@
                state0[i][j] = 0;
                state1[i][j] = 0;
             }
-          this.state.state = [state0, state1]
+          this.state.state = [state0, state1];
           this.setState({
+            state: this.state.state,
             stateSize: stateSize,
             patternName: "empty",
             ruleStep: 0,
             isDigitReversalPermutationRowsWasApplied: false,
             isDigitReversalPermutationRowsColsWasApplied: false
           });
+        },
+        handleSizeChange: function(event) {
+          var stateSize = parseInt(event.target.value);
+          this.setStateSize(stateSize);
         },
         handleScaleChange: function(event) {
           var scale = parseInt(event.target.value);
