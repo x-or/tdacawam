@@ -386,6 +386,8 @@
             imageSrc: "",
             isDigitReversalPermutationRowsWasApplied: false,
             isDigitReversalPermutationRowsColsWasApplied: false,
+            isQuadrupleDigitReversalPermutationRowsWasApplied: false,
+            isQuadrupleDigitReversalPermutationRowsColsWasApplied: false,
           };
         },
         clearState: function() {
@@ -401,6 +403,8 @@
             ruleStep: 0,
             isDigitReversalPermutationRowsWasApplied: false,
             isDigitReversalPermutationRowsColsWasApplied: false,
+            isQuadrupleDigitReversalPermutationRowsWasApplied: false,
+            isQuadrupleDigitReversalPermutationRowsColsWasApplied: false,
             // Warning: may be reset same in the handleSizeChange
           });
           return false;
@@ -588,6 +592,32 @@
           this.state.curState ^= 1;
           this.setState({patternName: "unknown"});
         },
+        quadrupleDigitReversalPermutation: function(permutate) {
+          var base = this.state.base;
+          var stateSize = this.state.stateSize;
+          var halfSize = Math.floor(stateSize / 2);
+          if (!isIntegerApproximation(Math.log(halfSize)/Math.log(base))) {
+            throw "Invalid state size";
+          }
+          var digitCount = Math.round(Math.log(halfSize)/Math.log(base));
+          var state0 = this.state.state[this.state.curState];
+          var state1 = this.state.state[this.state.curState ^ 1];
+          var ri = new Array(halfSize);
+          var rj = new Array(halfSize);
+          for (var n = 0; n < halfSize; n++) {
+            ri[n] = permutate.rows ? digitalReverse(n, digitCount, base) : n;
+            rj[n] = permutate.cols ? digitalReverse(n, digitCount, base) : n;
+          }
+          for (var i = 0; i < halfSize; i++)
+            for (var j = 0; j < halfSize; j++) {
+              state1[ri[i]][rj[j]] = state0[i][j];
+              state1[ri[i]+halfSize][rj[j]] = state0[i+halfSize][j];
+              state1[ri[i]][rj[j]+halfSize] = state0[i][j+halfSize];
+              state1[ri[i]+halfSize][rj[j]+halfSize] = state0[i+halfSize][j+halfSize];
+            }
+          this.state.curState ^= 1;
+          this.setState({patternName: "unknown"});
+        },
         digitReversalPermutationRowsCols: function(event) {
           this.digitReversalPermutation({rows: true, cols: true});
           this.setState({isDigitReversalPermutationRowsColsWasApplied: !this.state.isDigitReversalPermutationRowsColsWasApplied});
@@ -596,6 +626,16 @@
         digitReversalPermutationRows: function(event) {
           this.digitReversalPermutation({rows: true, cols: false});
           this.setState({isDigitReversalPermutationRowsWasApplied: !this.state.isDigitReversalPermutationRowsWasApplied});
+          return false;
+        },
+        quadrupleDigitReversalPermutationRowsCols: function(event) {
+          this.quadrupleDigitReversalPermutation({rows: true, cols: true});
+          this.setState({isQuadrupleDigitReversalPermutationRowsColsWasApplied: !this.state.isQuadrupleDigitReversalPermutationRowsColsWasApplied});
+          return false;
+        },
+        quadrupleDigitReversalPermutationRows: function(event) {
+          this.quadrupleDigitReversalPermutation({rows: true, cols: false});
+          this.setState({isQuadrupleDigitReversalPermutationRowsWasApplied: !this.state.isQuadrupleDigitReversalPermutationRowsWasApplied});
           return false;
         },
         handleCanvaseMouseDown: function(event) {
@@ -637,7 +677,9 @@
             patternName: "empty",
             ruleStep: 0,
             isDigitReversalPermutationRowsWasApplied: false,
-            isDigitReversalPermutationRowsColsWasApplied: false
+            isDigitReversalPermutationRowsColsWasApplied: false,
+            isQuadrupleDigitReversalPermutationRowsWasApplied: false,
+            isQuadrupleDigitReversalPermutationRowsColsWasApplied: false,
           });
         },
         handleSizeChange: function(event) {
@@ -722,6 +764,12 @@
                   <input style={IndicatorStyle[this.state.isDigitReversalPermutationRowsWasApplied]}
                          type="submit" onClick={this.digitReversalPermutationRows}
                          value={BorD+"RP(y)"} title={BitOrDigit+"-Reversal Permutation (rows only)"}/>
+                  <input style={IndicatorStyle[this.state.isQuadrupleDigitReversalPermutationRowsColsWasApplied]}
+                         type="submit" onClick={this.quadrupleDigitReversalPermutationRowsCols}
+                         value={"4"+BorD+"RP(x,y)"} title={"Quadruple "+BitOrDigit+"-Reversal Permutation (rows and columns)"} />
+                  <input style={IndicatorStyle[this.state.isQuadrupleDigitReversalPermutationRowsWasApplied]}
+                         type="submit" onClick={this.quadrupleDigitReversalPermutationRows}
+                         value={"4"+BorD+"RP(y)"} title={"Quadruple "+BitOrDigit+"-Reversal Permutation (rows only)"}/>
                 </div>
             </div>
             <div className="container">
