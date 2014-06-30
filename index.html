@@ -458,15 +458,26 @@
               state[i][j] = (i ^ j) % modulo;
           this.renderState();
         },
+        modularMultiplication: function() {
+          var modulo = this.state.modulo;
+          var stateSize = this.state.stateSize;
+          var state = this.state.state[this.state.curState];
+          this.clearState();
+          for (var i = 0; i < stateSize; i++)
+            for (var j = 0; j < stateSize; j++)
+              state[i][j] = (i * j) % modulo;
+          this.renderState();
+        },
         statics: {
-          patternNames: ["empty", "digit-reversal", "random", "diagonal", "xor"],
+          patternNames: ["empty", "digit-reversal", "random", "diagonal", "xor", "mulmod"],
           patterns: {
             "empty": {title: "Empty", apply: function() { this.emptyPattern(); }},
             "digit-reversal": {title: "Digit-Reversal", apply: function() { this.digitReversalPattern(); },
                                titlefn: function(base) { return base == 2 ? "Bit-Reversal" : "Digit-Reversal"; }},
             "random": {title: "Random", apply: function() { this.randomPattern(); }},
             "diagonal": {title: "Diagonal", apply: function() { this.diagonalPattern(); }},
-            "xor": { title: "Exclusive Or", apply: function() { this.exclusiveOrPattern(); }}
+            "xor": { title: "Exclusive Or", apply: function() { this.exclusiveOrPattern(); }},
+            "mulmod": { title: "Modular Multiplication", apply: function() { this.modularMultiplication(); }}
           }
         },
         setPattern: function(patternName) {
