@@ -416,7 +416,6 @@
         },
         emptyPattern: function() {
           this.clearState();
-          this.renderState();
         },
         digitReversalPattern: function() {
           var base = this.state.base;
@@ -427,7 +426,6 @@
           var digitCount = Math.round(Math.log(stateSize) / Math.log(base));
           for (var i = 0; i < stateSize; i++)
             state[i][digitalReverse(i, digitCount, base)] = modulo-1;
-          this.renderState();
         },
         diagonalPattern: function() {
           var modulo = this.state.modulo;
@@ -436,7 +434,6 @@
           this.clearState();
           for (var i = 0; i < stateSize; i++)
             state[i][i] = modulo-1;
-          this.renderState();
         },
         randomPattern: function() {
           var modulo = this.state.modulo;
@@ -446,7 +443,6 @@
           for (var i = 0; i < stateSize; i++)
             for (var j = 0; j < stateSize; j++)
               state[i][j] = Math.floor(Math.random() * modulo);
-          this.renderState();
         },
         exclusiveOrPattern: function() {
           var modulo = this.state.modulo;
@@ -456,7 +452,6 @@
           for (var i = 0; i < stateSize; i++)
             for (var j = 0; j < stateSize; j++)
               state[i][j] = (i ^ j) % modulo;
-          this.renderState();
         },
         modularMultiplication: function() {
           var modulo = this.state.modulo;
@@ -466,7 +461,6 @@
           for (var i = 0; i < stateSize; i++)
             for (var j = 0; j < stateSize; j++)
               state[i][j] = (i * j) % modulo;
-          this.renderState();
         },
         statics: {
           patternNames: ["empty", "digit-reversal", "random", "diagonal", "xor", "mulmod"],
@@ -530,7 +524,6 @@
             }
           }
           this.state.curState ^= 1;
-          this.renderState();
           this.setState({ruleStep: this.state.ruleStep + 1, patternName: "unknown"});
           return false;
         },
@@ -550,7 +543,6 @@
             for (var j = 0; j < stateSize; j++)
               state1[ri[i]][rj[j]] = state0[i][j];
           this.state.curState ^= 1;
-          this.renderState();
           this.setState({patternName: "unknown"});
         },
         digitReversalPermutationRowsCols: function(event) {
@@ -569,7 +561,6 @@
           var x = Math.floor(pos.x/scale);
           var y = Math.floor(pos.y/scale);
           this.state.state[this.state.curState][y][x] = this.state.modulo-1;
-          this.renderState();
           this.setState({patternName: "unknown"});
         },
         handleModuloChange: function(event) {
@@ -621,6 +612,7 @@
         componentDidMount: function() {
           console.log("componentDidMount %s", this.refs.stateCanvas);
           this.setPattern(this.state.patternName);
+          this.renderState();
         },
         componentDidUpdate: function() {
           console.log("componentDidUpdate: size=%d scale=%d", this.state.stateSize, this.state.scale);
