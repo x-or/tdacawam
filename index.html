@@ -417,6 +417,14 @@
         emptyPattern: function() {
           this.clearState();
         },
+        diagonalLine: function() {
+          var modulo = this.state.modulo;
+          var stateSize = this.state.stateSize;
+          var state = this.state.state[this.state.curState];
+          this.clearState();
+          for (var i = 0; i < stateSize; i++)
+            state[i][i] = modulo-1;
+        },
         permutedDiagonaLine: function() {
           var base = this.state.base;
           var modulo = this.state.modulo;
@@ -426,14 +434,6 @@
           var digitCount = Math.round(Math.log(stateSize) / Math.log(base));
           for (var i = 0; i < stateSize; i++)
             state[i][digitalReverse(i, digitCount, base)] = modulo-1;
-        },
-        diagonalLine: function() {
-          var modulo = this.state.modulo;
-          var stateSize = this.state.stateSize;
-          var state = this.state.state[this.state.curState];
-          this.clearState();
-          for (var i = 0; i < stateSize; i++)
-            state[i][i] = modulo-1;
         },
         randomPattern: function() {
           var modulo = this.state.modulo;
@@ -463,14 +463,14 @@
               state[i][j] = (i * j) % modulo;
         },
         statics: {
-          patternNames: ["empty", "permuted-diagonal", "random", "diagonal", "xor", "mulmod"],
+          patternNames: ["empty", "diagonal", "permuted-diagonal", "xor", "mulmod", "random"],
           patterns: {
             "empty": {title: "Empty", apply: function() { this.emptyPattern(); }},
-            "permuted-diagonal": {title: "Permuted Diagonal Line", apply: function() { this.permutedDiagonaLine(); }},
-            "random": {title: "Random", apply: function() { this.randomPattern(); }},
             "diagonal": {title: "Diagonal Line", apply: function() { this.diagonalLine(); }},
+            "permuted-diagonal": {title: "Permuted Diagonal Line", apply: function() { this.permutedDiagonaLine(); }},
             "xor": { title: "Exclusive Or", apply: function() { this.exclusiveOrPattern(); }},
-            "mulmod": { title: "Modular Multiplication", apply: function() { this.modularMultiplication(); }}
+            "mulmod": { title: "Modular Multiplication", apply: function() { this.modularMultiplication(); }},
+            "random": {title: "Random", apply: function() { this.randomPattern(); }}
           }
         },
         setPattern: function(patternName) {
