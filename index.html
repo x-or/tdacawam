@@ -427,7 +427,7 @@
           for (var i = 0; i < stateSize; i++)
             state[i][digitalReverse(i, digitCount, base)] = modulo-1;
         },
-        diagonalPattern: function() {
+        diagonalLine: function() {
           var modulo = this.state.modulo;
           var stateSize = this.state.stateSize;
           var state = this.state.state[this.state.curState];
@@ -468,7 +468,7 @@
             "empty": {title: "Empty", apply: function() { this.emptyPattern(); }},
             "permuted-diagonal": {title: "Permuted Diagonal Line", apply: function() { this.permutedDiagonaLine(); }},
             "random": {title: "Random", apply: function() { this.randomPattern(); }},
-            "diagonal": {title: "Diagonal", apply: function() { this.diagonalPattern(); }},
+            "diagonal": {title: "Diagonal Line", apply: function() { this.diagonalLine(); }},
             "xor": { title: "Exclusive Or", apply: function() { this.exclusiveOrPattern(); }},
             "mulmod": { title: "Modular Multiplication", apply: function() { this.modularMultiplication(); }}
           }
