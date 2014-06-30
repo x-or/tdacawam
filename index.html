@@ -189,6 +189,10 @@
       function parseIntInRange(s, intMin, intMax) {
         return Math.min(intMax, Math.max(intMin, parseInt(s)));
       }
+
+      function isIntegerApproximation(f) {
+        return Math.abs(Math.round(f) - f) < 1.e-10;
+      }
     </script>
   </head>
   <body bgcolor="#efefef">
@@ -462,12 +466,52 @@
             for (var j = 0; j < stateSize; j++)
               state[i][j] = (i * j) % modulo;
         },
+        manifestationOfPDL: function() {
+          var base = this.state.base;
+          var modulo = this.state.modulo;
+          var stateSize = this.state.stateSize;
+          if (!isIntegerApproximation(Math.log(stateSize) / Math.log(base)) 
+           && !isIntegerApproximation(Math.log(Math.floor(stateSize / 2)) / Math.log(base))) {
+            throw "Incorrect state size";
+          }
+          if (!isIntegerApproximation(Math.log(Math.floor(stateSize / 2)) / Math.log(base))) {
+            stateSize *= 2;
+            this.setStateSize(stateSize);
+            this.setState({patternName: "mopdl"});
+          } else {
+            this.clearState();
+          }
+          var halfSize = Math.floor(stateSize / 2);
+          var digitCount = Math.round(Math.log(halfSize) / Math.log(base));
+          var state = this.state.state[this.state.curState];
+          var reversible_state = createArray(stateSize, stateSize);
+          for (var i = 0; i < stateSize; i++)
+            for (var j = 0; j < stateSize; j++)
+              reversible_state[i][j] = 0;
+          for (var i = 0; i < halfSize; i++) {
+            var r = digitalReverse(i, digitCount, base);
+            reversible_state[i][r] = 1;
+            reversible_state[i+halfSize][r] = modulo-1;
+            reversible_state[i][r+halfSize] = modulo-1;
+            reversible_state[i+halfSize][r+halfSize] = 1;
+          }
+          var i0, i1, j0, j1;
+          for (i0 = 0; i0 < stateSize-1; i0++) {
+            i1 = i0 + 1;
+            for (j0 = 0; j0 < stateSize-1; j0++) {
+              j1 = j0 + 1;
+              // solves s11 from (s00 - s01 - s10 + s11 == rs00) (mod modulo)
+              state[i1][j1] = (reversible_state[i0][j0] - state[i0][j0] + state[i0][j1] + state[i1][j0] + modulo) % modulo;
+            }
+          }
+        },
         statics: {
-          patternNames: ["empty", "diagonal", "permuted-diagonal", "xor", "mulmod", "random"],
+          patternNames: ["empty", "diagonal", "permuted-diagonal", "mopdl", "xor", "mulmod", "random"],
           patterns: {
             "empty": {title: "Empty", apply: function() { this.emptyPattern(); }},
             "diagonal": {title: "Diagonal Line", apply: function() { this.diagonalLine(); }},
-            "permuted-diagonal": {title: "Permuted Diagonal Line", apply: function() { this.permutedDiagonaLine(); }},
+            "permuted-diagonal": {title: "Permuted Diagonal Line (PDL)", apply: function() { this.permutedDiagonaLine(); }},
+            "mopdl": { title: "Manifestation of PDL", apply: function() { this.manifestationOfPDL(); }},
             "xor": { title: "Exclusive Or", apply: function() { this.exclusiveOrPattern(); }},
             "mulmod": { title: "Modular Multiplication", apply: function() { this.modularMultiplication(); }},
             "random": {title: "Random", apply: function() { this.randomPattern(); }}
