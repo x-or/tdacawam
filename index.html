@@ -417,7 +417,7 @@
         emptyPattern: function() {
           this.clearState();
         },
-        digitReversalPattern: function() {
+        permutedDiagonaLine: function() {
           var base = this.state.base;
           var modulo = this.state.modulo;
           var stateSize = this.state.stateSize;
@@ -463,11 +463,10 @@
               state[i][j] = (i * j) % modulo;
         },
         statics: {
-          patternNames: ["empty", "digit-reversal", "random", "diagonal", "xor", "mulmod"],
+          patternNames: ["empty", "permuted-diagonal", "random", "diagonal", "xor", "mulmod"],
           patterns: {
             "empty": {title: "Empty", apply: function() { this.emptyPattern(); }},
-            "digit-reversal": {title: "Digit-Reversal", apply: function() { this.digitReversalPattern(); },
-                               titlefn: function(base) { return base == 2 ? "Bit-Reversal" : "Digit-Reversal"; }},
+            "permuted-diagonal": {title: "Permuted Diagonal Line", apply: function() { this.permutedDiagonaLine(); }},
             "random": {title: "Random", apply: function() { this.randomPattern(); }},
             "diagonal": {title: "Diagonal", apply: function() { this.diagonalPattern(); }},
             "xor": { title: "Exclusive Or", apply: function() { this.exclusiveOrPattern(); }},
