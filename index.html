@@ -447,6 +447,27 @@
           for (var i = 0; i < stateSize; i++)
             state[i][digitalReverse(i, digitCount, base)] = modulo-1;
         },
+        quarterPermutedDiagonaLine: function() {
+          var base = this.state.base;
+          var modulo = this.state.modulo;
+          var stateSize = this.state.stateSize;
+          if (!isIntegerApproximation(log(stateSize, base)) 
+           && !isIntegerApproximation(log(Math.floor(stateSize / 2), base))) {
+            throw "Incorrect state size";
+          }
+          if (!isIntegerApproximation(log(Math.floor(stateSize / 2), base))) {
+            stateSize *= 2;
+            this.setStateSize(stateSize);
+            this.setState({patternName: "qpdl"});
+          } else {
+            this.clearState();
+          }
+          var halfSize = stateSize/2;
+          var state = this.stateCells[this.curState];
+          var digitCountOfTheHalf = Math.round(log(halfSize, base));
+          for (var i = 0; i < halfSize; i++)
+            state[i+halfSize][digitalReverse(i, digitCountOfTheHalf, base)+halfSize] = 1;
+        },
         randomPattern: function() {
           var modulo = this.state.modulo;
           var stateSize = this.state.stateSize;
@@ -514,11 +535,12 @@
           }
         },
         statics: {
-          patternNames: ["empty", "diagonal", "permuted-diagonal", "mopdl", "xor", "mulmod", "random"],
+          patternNames: ["empty", "diagonal", "permuted-diagonal", "qpdl", "mopdl", "xor", "mulmod", "random"],
           patterns: {
             "empty": {title: "Empty", apply: function() { this.emptyPattern(); }},
             "diagonal": {title: "Diagonal Line", apply: function() { this.diagonalLine(); }},
             "permuted-diagonal": {title: "Permuted Diagonal Line (PDL)", apply: function() { this.permutedDiagonaLine(); }},
+            "qpdl": {title: "Quarter Permuted Diagonal Line (QPDL)", apply: function() { this.quarterPermutedDiagonaLine(); }},
             "mopdl": { title: "Manifestation of PDL", apply: function() { this.manifestationOfPDL(); }},
             "xor": { title: "Exclusive Or", apply: function() { this.exclusiveOrPattern(); }},
             "mulmod": { title: "Modular Multiplication", apply: function() { this.modularMultiplication(); }},
