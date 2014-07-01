@@ -578,6 +578,39 @@
           this.setState({ruleStep: this.state.ruleStep + 1, patternName: "unknown"});
           return false;
         },
+        reverseQuadrupleRuleCell4: function() {
+          var base = this.state.base;
+          var modulo = this.state.modulo;
+          var stateSize = this.state.stateSize;
+          var state = this.stateCells[this.curState^1];
+          var reversible_state = this.stateCells[this.curState];
+          var rule = this.state.rule;
+          var sign = this.state.sign;
+          var r1 = ((rule & 1) != 0 ? 1 : 0) * ((sign & 1) != 0 ? -1 : 1);
+          var r2 = ((rule & 2) != 0 ? 1 : 0) * ((sign & 2) != 0 ? -1 : 1);
+          var r4 = ((rule & 4) != 0 ? 1 : 0) * ((sign & 4) != 0 ? -1 : 1);
+          var r8 = ((rule & 8) != 0 ? 1 : 0) * ((sign & 8) != 0 ? -1 : 1);
+          var i0, i1, j0, j1, s11;
+          for (i0 = 0; i0 < stateSize-1; i0++) {
+            i1 = i0 + 1;
+            for (j0 = 0; j0 < stateSize-1; j0++) {
+              j1 = j0 + 1;
+              // Quadruple rule layout:
+              //      j0 | j1
+              //    +----+----+
+              // i0 | r1 | r2 |
+              // ---+----+----+
+              // i1 | r8 | r4 |
+              //    +----+----+
+              // solves s11 from (r1*s00 + r2*s01 + r4*s11 + r8*s10 == rs00) (mod modulo)
+              s11 = (reversible_state[i0][j0] - r1*state[i0][j0] - r2*state[i0][j1] - r8*state[i1][j0])*r4;
+              state[i1][j1] = ((s11%modulo)+modulo)%modulo;
+            }
+          }
+          this.curState ^= 1;
+          this.setState({ruleStep: this.state.ruleStep-1, patternName: "unknown"});
+          return false;
+        },
         digitReversalPermutation: function(permutate) {
           var base = this.state.base;
           var stateSize = this.state.stateSize;
@@ -760,7 +793,12 @@
                     }, this)}
                 </select></label>
                 <div>
-                  <input type="submit" onClick={this.applyRule} value="Apply rule"/><span>Step: {this.state.ruleStep}</span>
+                  <input type="submit" onClick={this.applyRule} value="Apply rule"/>
+                  <input type="submit"
+                         disabled={(this.state.rule & 4) == 0}
+                         onClick={this.reverseQuadrupleRuleCell4}
+                         value="Reverse rule (1,2,4,8)"/>
+                  <span>Step: {this.state.ruleStep}</span>
                   <input style={IndicatorStyle[this.state.isDigitReversalPermutationRowsColsWasApplied]}
                          disabled={!isIntegerApproximation(log(stateSize, base))}
                          type="submit" onClick={this.digitReversalPermutationRowsCols}
