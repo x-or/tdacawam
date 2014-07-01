@@ -190,6 +190,10 @@
         return Math.min(intMax, Math.max(intMin, parseInt(s)));
       }
 
+      function log(x, base) {
+        return Math.log(x)/Math.log(base);
+      }
+
       function isIntegerApproximation(f) {
         return Math.abs(Math.round(f) - f) < 1.e-10;
       }
@@ -439,7 +443,7 @@
           var stateSize = this.state.stateSize;
           var state = this.stateCells[this.curState];
           this.clearState();
-          var digitCount = Math.round(Math.log(stateSize) / Math.log(base));
+          var digitCount = Math.round(log(stateSize, base));
           for (var i = 0; i < stateSize; i++)
             state[i][digitalReverse(i, digitCount, base)] = modulo-1;
         },
@@ -474,11 +478,11 @@
           var base = this.state.base;
           var modulo = this.state.modulo;
           var stateSize = this.state.stateSize;
-          if (!isIntegerApproximation(Math.log(stateSize) / Math.log(base)) 
-           && !isIntegerApproximation(Math.log(Math.floor(stateSize / 2)) / Math.log(base))) {
+          if (!isIntegerApproximation(log(stateSize, base)) 
+           && !isIntegerApproximation(log(Math.floor(stateSize / 2), base))) {
             throw "Incorrect state size";
           }
-          if (!isIntegerApproximation(Math.log(Math.floor(stateSize / 2)) / Math.log(base))) {
+          if (!isIntegerApproximation(log(Math.floor(stateSize / 2), base))) {
             stateSize *= 2;
             this.setStateSize(stateSize);
             this.setState({patternName: "mopdl"});
@@ -486,7 +490,7 @@
             this.clearState();
           }
           var halfSize = Math.floor(stateSize / 2);
-          var digitCount = Math.round(Math.log(halfSize) / Math.log(base));
+          var digitCount = Math.round(log(halfSize, base));
           var state = this.stateCells[this.curState];
           var reversible_state = createArray(stateSize, stateSize);
           for (var i = 0; i < stateSize; i++)
@@ -577,7 +581,7 @@
         digitReversalPermutation: function(permutate) {
           var base = this.state.base;
           var stateSize = this.state.stateSize;
-          var digitCount = Math.round(Math.log(stateSize)/Math.log(base));
+          var digitCount = Math.round(log(stateSize, base));
           var state0 = this.stateCells[this.curState];
           var state1 = this.stateCells[this.curState ^ 1];
           var ri = new Array(stateSize);
@@ -596,10 +600,10 @@
           var base = this.state.base;
           var stateSize = this.state.stateSize;
           var halfSize = Math.floor(stateSize / 2);
-          if (!isIntegerApproximation(Math.log(halfSize)/Math.log(base))) {
+          if (!isIntegerApproximation(log(halfSize, base))) {
             throw "Invalid state size";
           }
-          var digitCount = Math.round(Math.log(halfSize)/Math.log(base));
+          var digitCount = Math.round(log(halfSize, base));
           var state0 = this.stateCells[this.curState];
           var state1 = this.stateCells[this.curState ^ 1];
           var ri = new Array(halfSize);
@@ -758,19 +762,19 @@
                 <div>
                   <input type="submit" onClick={this.applyRule} value="Apply rule"/><span>Step: {this.state.ruleStep}</span>
                   <input style={IndicatorStyle[this.state.isDigitReversalPermutationRowsColsWasApplied]}
-                         disabled={!isIntegerApproximation(Math.log(stateSize)/Math.log(base))}
+                         disabled={!isIntegerApproximation(log(stateSize, base))}
                          type="submit" onClick={this.digitReversalPermutationRowsCols}
                          value={BorD+"RP(x,y)"} title={BitOrDigit+"-Reversal Permutation (rows and columns)"} />
                   <input style={IndicatorStyle[this.state.isDigitReversalPermutationRowsWasApplied]}
-                         disabled={!isIntegerApproximation(Math.log(stateSize)/Math.log(base))}
+                         disabled={!isIntegerApproximation(log(stateSize, base))}
                          type="submit" onClick={this.digitReversalPermutationRows}
                          value={BorD+"RP(y)"} title={BitOrDigit+"-Reversal Permutation (rows only)"}/>
                   <input style={IndicatorStyle[this.state.isQuadrupleDigitReversalPermutationRowsColsWasApplied]}
-                         disabled={!isIntegerApproximation(Math.log(Math.floor(stateSize/2))/Math.log(base))}
+                         disabled={!isIntegerApproximation(log(Math.floor(stateSize/2), base))}
                          type="submit" onClick={this.quadrupleDigitReversalPermutationRowsCols}
                          value={"4"+BorD+"RP(x,y)"} title={"Quadruple "+BitOrDigit+"-Reversal Permutation (rows and columns)"} />
                   <input style={IndicatorStyle[this.state.isQuadrupleDigitReversalPermutationRowsWasApplied]}
-                         disabled={!isIntegerApproximation(Math.log(Math.floor(stateSize/2))/Math.log(base))}
+                         disabled={!isIntegerApproximation(log(Math.floor(stateSize/2), base))}
                          type="submit" onClick={this.quadrupleDigitReversalPermutationRows}
                          value={"4"+BorD+"RP(y)"} title={"Quadruple "+BitOrDigit+"-Reversal Permutation (rows only)"}/>
                 </div>
