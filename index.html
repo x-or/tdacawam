@@ -8,7 +8,7 @@
 <html>
   <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <title>Two-Dimensional Additive Cellular Automata with Arbitrary Modulo</title>
+  <title>Two-Dimensional Additive Cellular Automata with Arbitrary Modulus</title>
     <style type="text/css">
       div.container {
         margin-left: auto;
@@ -58,7 +58,7 @@
     </style>
     <script>
       var maxCanvasSize = 4096;
-      var maxModulo = 4096;
+      var maxModulus = 4096;
       var maxBase = 4096;
 
       var IndicatorStyle = {false: {}, true: {backgroundColor: "#fe0"}};
@@ -388,7 +388,7 @@
             stateSize: stateSize,
             scale: parseIntInRange(queryString['scale'], 1, Math.floor(maxCanvasSize/stateSize)) || 1,
             base: parseIntInRange(queryString['base'], 2, maxBase) || 2,
-            modulo: parseIntInRange(queryString['modulo'], 2, maxModulo) || 2,
+            modulus: parseIntInRange(queryString['modulus'], 2, maxModulus) || 2,
             ruleStep: 0,
             patternName: queryString['pattern'] || "empty",
             rule: parseIntInRange(queryString['rule'], 0, 511) || 15,
@@ -425,23 +425,23 @@
           return false;
         },
         renderState: function() {
-          var modulo = this.state.modulo;
+          var modulus = this.state.modulus;
           var stateSize = this.state.stateSize;
           var scale = this.state.scale;
           var state = this.stateCells[this.curState];
-          var color = new Array(modulo+1); // cache?
-          for (var i = 0; i < modulo; i++) {
-            c = Math.floor(255*i/(modulo-1));
+          var color = new Array(modulus+1); // cache?
+          for (var i = 0; i < modulus; i++) {
+            c = Math.floor(255*i/(modulus-1));
             color[i] = [c, c, c];
           }
-          color[modulo] = [255, 0, 0]; // error color
+          color[modulus] = [255, 0, 0]; // error color
           render(state, stateSize, this.refs.stateCanvas.getDOMNode(), color, scale);
         },
         emptyPattern: function() {
           this.clearState();
         },
         diagonalLine: function() {
-          var modulo = this.state.modulo;
+          var modulus = this.state.modulus;
           var stateSize = this.state.stateSize;
           var state = this.stateCells[this.curState];
           this.clearState();
@@ -450,7 +450,7 @@
         },
         permutedDiagonaLine: function() {
           var base = this.state.base;
-          var modulo = this.state.modulo;
+          var modulus = this.state.modulus;
           var stateSize = this.state.stateSize;
           var state = this.stateCells[this.curState];
           this.clearState();
@@ -460,7 +460,7 @@
         },
         quarterPermutedDiagonaLine: function() {
           var base = this.state.base;
-          var modulo = this.state.modulo;
+          var modulus = this.state.modulus;
           var stateSize = this.state.stateSize;
           if (!isIntegerApproximation(log(stateSize, base)) 
            && !isIntegerApproximation(log(Math.floor(stateSize / 2), base))) {
@@ -480,35 +480,35 @@
             state[i+halfSize][digitalReverse(i, digitCountOfTheHalf, base)+halfSize] = 1;
         },
         randomPattern: function() {
-          var modulo = this.state.modulo;
+          var modulus = this.state.modulus;
           var stateSize = this.state.stateSize;
           var state = this.stateCells[this.curState];
           this.clearState();
           for (var i = 0; i < stateSize; i++)
             for (var j = 0; j < stateSize; j++)
-              state[i][j] = Math.floor(Math.random() * modulo);
+              state[i][j] = Math.floor(Math.random() * modulus);
         },
         exclusiveOrPattern: function() {
-          var modulo = this.state.modulo;
+          var modulus = this.state.modulus;
           var stateSize = this.state.stateSize;
           var state = this.stateCells[this.curState];
           this.clearState();
           for (var i = 0; i < stateSize; i++)
             for (var j = 0; j < stateSize; j++)
-              state[i][j] = (i ^ j) % modulo;
+              state[i][j] = (i ^ j) % modulus;
         },
         modularMultiplication: function() {
-          var modulo = this.state.modulo;
+          var modulus = this.state.modulus;
           var stateSize = this.state.stateSize;
           var state = this.stateCells[this.curState];
           this.clearState();
           for (var i = 0; i < stateSize; i++)
             for (var j = 0; j < stateSize; j++)
-              state[i][j] = (i * j) % modulo;
+              state[i][j] = (i * j) % modulus;
         },
         manifestationOfPDL: function() {
           var base = this.state.base;
-          var modulo = this.state.modulo;
+          var modulus = this.state.modulus;
           var stateSize = this.state.stateSize;
           if (!isIntegerApproximation(log(stateSize, base)) 
            && !isIntegerApproximation(log(Math.floor(stateSize / 2), base))) {
@@ -531,8 +531,8 @@
           for (var i = 0; i < halfSize; i++) {
             var r = digitalReverse(i, digitCount, base);
             reversible_state[i][r] = 1;
-            reversible_state[i+halfSize][r] = modulo-1;
-            reversible_state[i][r+halfSize] = modulo-1;
+            reversible_state[i+halfSize][r] = modulus-1;
+            reversible_state[i][r+halfSize] = modulus-1;
             reversible_state[i+halfSize][r+halfSize] = 1;
           }
           var i0, i1, j0, j1;
@@ -540,8 +540,8 @@
             i1 = i0 + 1;
             for (j0 = 0; j0 < stateSize-1; j0++) {
               j1 = j0 + 1;
-              // solves s11 from (s00 - s01 - s10 + s11 == rs00) (mod modulo)
-              state[i1][j1] = (reversible_state[i0][j0] - state[i0][j0] + state[i0][j1] + state[i1][j0] + modulo) % modulo;
+              // solves s11 from (s00 - s01 - s10 + s11 == rs00) (mod modulus)
+              state[i1][j1] = (reversible_state[i0][j0] - state[i0][j0] + state[i0][j1] + state[i1][j0] + modulus) % modulus;
             }
           }
         },
@@ -566,7 +566,7 @@
           }
         },
         applyRule: function() {
-          var modulo = this.state.modulo;
+          var modulus = this.state.modulus;
           var stateSize = this.state.stateSize;
           var state0 = this.stateCells[this.curState];
           var state1 = this.stateCells[this.curState ^ 1];
@@ -604,7 +604,7 @@
                v = r64*state_il[jl] + r128*state_il[j0] + r256*state_il[j1] +
                    r32*state_i0[jl] +   r1*state_i0[j0] +   r2*state_i0[j1] +
                    r16*state_i1[jl] +   r8*state_i1[j0] +   r4*state_i1[j1];
-               state1[i0][j0] = ((v%modulo)+modulo)%modulo;
+               state1[i0][j0] = ((v%modulus)+modulus)%modulus;
             }
           }
           this.curState ^= 1;
@@ -613,7 +613,7 @@
         },
         reverseQuadrupleRuleCell4: function() {
           var base = this.state.base;
-          var modulo = this.state.modulo;
+          var modulus = this.state.modulus;
           var stateSize = this.state.stateSize;
           var state = this.stateCells[this.curState^1];
           var reversible_state = this.stateCells[this.curState];
@@ -635,9 +635,9 @@
               // ---+----+----+
               // i1 | r8 | r4 |
               //    +----+----+
-              // solves s11 from (r1*s00 + r2*s01 + r4*s11 + r8*s10 == rs00) (mod modulo)
+              // solves s11 from (r1*s00 + r2*s01 + r4*s11 + r8*s10 == rs00) (mod modulus)
               s11 = (reversible_state[i0][j0] - r1*state[i0][j0] - r2*state[i0][j1] - r8*state[i1][j0])*r4;
-              state[i1][j1] = ((s11%modulo)+modulo)%modulo;
+              state[i1][j1] = ((s11%modulus)+modulus)%modulus;
             }
           }
           this.curState ^= 1;
@@ -745,15 +745,15 @@
           var scale = this.state.scale;
           var x = Math.floor(pos.x/scale);
           var y = Math.floor(pos.y/scale);
-          this.stateCells[this.curState][y][x] = this.state.modulo-1;
+          this.stateCells[this.curState][y][x] = this.state.modulus-1;
           this.setState({patternName: "unknown"});
         },
-        handleModuloChange: function(event) {
-          var modulo = parseInt(event.target.value);
-          if (modulo == NaN) // FIXME
-             modulo = 2;
-          //var modulo = event.target.value;
-          this.setState({modulo: modulo, patternName: "unknown"});
+        handleModulusChange: function(event) {
+          var modulus = parseInt(event.target.value);
+          if (modulus == NaN) // FIXME
+             modulus = 2;
+          //var modulus = event.target.value;
+          this.setState({modulus: modulus, patternName: "unknown"});
         },
         handleBaseChange: function(event) {
           var base = parseInt(event.target.value);
@@ -825,7 +825,7 @@
         },
         render: function() {
           var base = this.state.base;
-          var modulo = this.state.modulo;
+          var modulus = this.state.modulus;
           var stateSize = this.state.stateSize;
           var scale = this.state.scale;
           var stateSizes = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(function(power) { return {value: Math.pow(base, power), power: power}; }).concat(
@@ -836,7 +836,7 @@
           return <div>
             <div>
                 <label>Base: </label><input type="number" min="2" max={maxBase} value={base} onChange={this.handleBaseChange}/>
-                <label>Modulo: </label><input type="number" min="2" max={maxModulo} value={modulo} onChange={this.handleModuloChange}/>
+                <label>Modulus: </label><input type="number" min="2" max={maxModulus} value={modulus} onChange={this.handleModulusChange}/>
                 <label>Pattern: <select onChange={this.handlePatternChange} value={this.state.patternName}>
                   // Will selected when pattern will be altered
                   <option disabled={true} value="unknown">(unknown)</option>

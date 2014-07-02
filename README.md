@@ -1,4 +1,4 @@
-﻿# [Two-Dimensional Additive Cellular Automata with Arbitrary Modulo](http://x-or.github.io/tdacawam/)
+﻿# [Two-Dimensional Additive Cellular Automata with Arbitrary Modulus](http://x-or.github.io/tdacawam/)
 
 To get started, check out a [Web Application](http://x-or.github.io/tdacawam/)!
 
