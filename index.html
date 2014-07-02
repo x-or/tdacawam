@@ -446,7 +446,7 @@
           var state = this.stateCells[this.curState];
           this.clearState();
           for (var i = 0; i < stateSize; i++)
-            state[i][i] = modulo-1;
+            state[i][i] = 1;
         },
         permutedDiagonaLine: function() {
           var base = this.state.base;
@@ -456,7 +456,7 @@
           this.clearState();
           var digitCount = Math.round(log(stateSize, base));
           for (var i = 0; i < stateSize; i++)
-            state[i][digitalReverse(i, digitCount, base)] = modulo-1;
+            state[i][digitalReverse(i, digitCount, base)] = 1;
         },
         quarterPermutedDiagonaLine: function() {
           var base = this.state.base;
