@@ -114,6 +114,13 @@
       assert(digitalReverse(0x123, 3, 16) == 0x321, "digitalReverse 0x123");
       assert(digitalReverse(0x54321, 5, 16) == 0x12345, "digitalReverse 0x54321");
 
+      function patternGrouping(n, size, base) {
+        // [0, 1, 2, 3] --(base=2)--> [0, 2, 1, 3]
+        var blockSize = Math.floor(size/base);
+        var blockNumber = Math.floor(n/blockSize);
+        return (n%blockSize)*base + blockNumber;
+      }
+
       function render(state, state_size, canvas, color, scale){
         var context = canvas.getContext('2d');
 
@@ -392,6 +399,8 @@
             isDigitReversalPermutationRowsColsWasApplied: false,
             isQuadrupleDigitReversalPermutationRowsWasApplied: false,
             isQuadrupleDigitReversalPermutationRowsColsWasApplied: false,
+            patternGroupingRowsStep: 0,
+            patternGroupingRowsColsStep: 0,
           };
         },
         clearState: function() {
@@ -409,6 +418,8 @@
             isDigitReversalPermutationRowsColsWasApplied: false,
             isQuadrupleDigitReversalPermutationRowsWasApplied: false,
             isQuadrupleDigitReversalPermutationRowsColsWasApplied: false,
+            patternGroupingRowsStep: 0,
+            patternGroupingRowsColsStep: 0,
             // Warning: may be reset same in the handleSizeChange
           });
           return false;
@@ -697,6 +708,38 @@
           this.setState({isQuadrupleDigitReversalPermutationRowsWasApplied: !this.state.isQuadrupleDigitReversalPermutationRowsWasApplied});
           return false;
         },
+        patternGrouping: function(permutate) {
+          var base = this.state.base;
+          var stateSize = this.state.stateSize;
+          var state0 = this.stateCells[this.curState];
+          var state1 = this.stateCells[this.curState ^ 1];
+          var pi = new Array(stateSize);
+          var pj = new Array(stateSize);
+          for (var n = 0; n < stateSize; n++) {
+            pi[n] = permutate.rows ? patternGrouping(n, stateSize, base) : n;
+            pj[n] = permutate.cols ? patternGrouping(n, stateSize, base) : n;
+          }
+          for (var i = 0; i < stateSize; i++)
+            for (var j = 0; j < stateSize; j++)
+              state1[pi[i]][pj[j]] = state0[i][j];
+          this.curState ^= 1;
+        },
+        patternGroupingRows: function(event) {
+          var base = this.state.base;
+          var stateSize = this.state.stateSize;
+          var digitCount = Math.round(log(stateSize, base));
+          this.patternGrouping({rows: true, cols: false});
+          this.setState({patternGroupingRowsStep: (this.state.patternGroupingRowsStep + 1) % digitCount, patternName: "unknown"});
+          return false;
+        },
+        patternGroupingRowsCols: function(event) {
+          var base = this.state.base;
+          var stateSize = this.state.stateSize;
+          var digitCount = Math.round(log(stateSize, base));
+          this.patternGrouping({rows: true, cols: true});
+          this.setState({patternGroupingRowsColsStep: (this.state.patternGroupingRowsColsStep + 1) % digitCount, patternName: "unknown"});
+          return false;
+        },
         handleCanvaseMouseDown: function(event) {
           var pos = getMousePos(this.refs.stateCanvas.getDOMNode(), event);
           var scale = this.state.scale;
@@ -716,7 +759,12 @@
           var base = parseInt(event.target.value);
           if (base == NaN) // FIXME
              base = 2;
-          this.setState({base: base, patternName: "unknown"});
+          this.setState({
+            base: base, 
+            patternName: "unknown",
+            patternGroupingRowsStep: 0,
+            patternGroupingRowsColsStep: 0,
+          });
         },
         handlePatternChange: function(event) {
           this.setPattern(event.target.value);
@@ -738,6 +786,8 @@
             isDigitReversalPermutationRowsColsWasApplied: false,
             isQuadrupleDigitReversalPermutationRowsWasApplied: false,
             isQuadrupleDigitReversalPermutationRowsColsWasApplied: false,
+            patternGroupingRowsStep: 0,
+            patternGroupingRowsColsStep: 0,
           });
         },
         handleSizeChange: function(event) {
@@ -837,6 +887,14 @@
                          disabled={!isIntegerApproximation(log(Math.floor(stateSize/2), base))}
                          type="submit" onClick={this.quadrupleDigitReversalPermutationRows}
                          value={"4"+BorD+"RP(y)"} title={"Quadruple "+BitOrDigit+"-Reversal Permutation (rows only)"}/>
+                  <input style={IndicatorStyle[this.state.patternGroupingRowsColsStep != 0]}
+                         disabled={!isIntegerApproximation(log(Math.floor(stateSize), base))}
+                         type="submit" onClick={this.patternGroupingRowsCols}
+                         value={"PG (x,y) ["+this.state.patternGroupingRowsColsStep+"]"} title="Pattern Grouping (rows and columns)"/>
+                  <input style={IndicatorStyle[this.state.patternGroupingRowsStep != 0]}
+                         disabled={!isIntegerApproximation(log(Math.floor(stateSize), base))}
+                         type="submit" onClick={this.patternGroupingRows}
+                         value={"PG (y) ["+this.state.patternGroupingRowsStep+"]"} title="Pattern Grouping (rows only)"/>
                 </div>
             </div>
             <div className="container">
