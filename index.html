@@ -121,7 +121,7 @@
         return (n%blockSize)*base + blockNumber;
       }
 
-      function render(state, state_size, canvas, color, scale){
+      function renderStateOnCanvas(state, state_size, canvas, color, scale){
         var context = canvas.getContext('2d');
 
         var imageData = context.createImageData(state_size*scale, state_size*scale);
@@ -435,7 +435,7 @@
             color[i] = [c, c, c];
           }
           color[modulus] = [255, 0, 0]; // error color
-          render(state, stateSize, this.refs.stateCanvas.getDOMNode(), color, scale);
+          renderStateOnCanvas(state, stateSize, this.refs.stateCanvas.getDOMNode(), color, scale);
         },
         emptyPattern: function() {
           this.clearState();
