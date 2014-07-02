@@ -837,15 +837,6 @@
             <div>
                 <label>Base: </label><input type="number" min="2" max={maxBase} value={base} onChange={this.handleBaseChange}/>
                 <label>Modulus: </label><input type="number" min="2" max={maxModulus} value={modulus} onChange={this.handleModulusChange}/>
-                <label>Pattern: <select onChange={this.handlePatternChange} value={this.state.patternName}>
-                  // Will selected when pattern will be altered
-                  <option disabled={true} value="unknown">(unknown)</option>
-                  {ReactApplication.patternNames.map(function(patternName) {
-                      var pattern = ReactApplication.patterns[patternName];
-                      var title = pattern.titlefn ? pattern.titlefn(base) : pattern.title;
-                      return <option value={patternName}>{title}</option>;
-                    }, this)}
-                </select></label>
                 <label>State size: <select onChange={this.handleSizeChange} value={stateSize}>
                   // Will selected when stateSize size is non-standard (e.g. size defined by query_string)
                   <option disabled={true} value={stateSize}>{"Actual size is "+stateSize}</option>
@@ -862,6 +853,15 @@
                         visible={this.isDisplayableScale(scale)}
                         value={scale}
                         text={scale+"x (view size is "+ scale*stateSize +")"} />;
+                    }, this)}
+                </select></label>
+                <label>Pattern: <select onChange={this.handlePatternChange} value={this.state.patternName}>
+                  // Will selected when pattern will be altered
+                  <option disabled={true} value="unknown">(unknown)</option>
+                  {ReactApplication.patternNames.map(function(patternName) {
+                      var pattern = ReactApplication.patterns[patternName];
+                      var title = pattern.titlefn ? pattern.titlefn(base) : pattern.title;
+                      return <option value={patternName}>{title}</option>;
                     }, this)}
                 </select></label>
                 <div>
