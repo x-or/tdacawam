@@ -835,6 +835,8 @@
           var scales = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 30, 40];
           var BorD = base == 2 ? "B" : "D";
           var BitOrDigit = base == 2 ? "Bit" : "Digit";
+          var rule = this.state.rule;
+          var isRuleReversible = ((rule & 4) != 0) && ((rule & (16|32|64|128|256)) == 0);
           return <div>
             <div>
                 <label>Base: </label><input type="number" min="2" max={maxBase} value={base} onChange={this.handleBaseChange}/>
@@ -869,7 +871,7 @@
                 <div>
                   <input type="submit" onClick={this.applyRule} value="Apply rule"/>
                   <input type="submit"
-                         disabled={(this.state.rule & 4) == 0}
+                         disabled={!isRuleReversible}
                          onClick={this.reverseQuadrupleRuleCell4}
                          value="Reverse rule (1,2,4,8)"/>
                   <span>Step: {this.state.ruleStep}</span>
