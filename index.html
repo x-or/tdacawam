@@ -741,6 +741,8 @@
           return false;
         },
         handleCanvaseMouseDown: function(event) {
+          if (event.button != 0)
+            return;
           var pos = getMousePos(this.refs.stateCanvas.getDOMNode(), event);
           var scale = this.state.scale;
           var x = Math.floor(pos.x/scale);
