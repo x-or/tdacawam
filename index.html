@@ -892,11 +892,11 @@
                          type="submit" onClick={this.quadrupleDigitReversalPermutationRows}
                          value={"4"+BorD+"RP(y)"} title={"Quadruple "+BitOrDigit+"-Reversal Permutation (rows only)"}/>
                   <input style={IndicatorStyle[this.state.patternGroupingRowsColsStep != 0]}
-                         disabled={!isIntegerApproximation(log(Math.floor(stateSize), base))}
+                         disabled={!isIntegerApproximation(log(stateSize, base))}
                          type="submit" onClick={this.patternGroupingRowsCols}
                          value={"PG (x,y) ["+this.state.patternGroupingRowsColsStep+"]"} title="Pattern Grouping (rows and columns)"/>
                   <input style={IndicatorStyle[this.state.patternGroupingRowsStep != 0]}
-                         disabled={!isIntegerApproximation(log(Math.floor(stateSize), base))}
+                         disabled={!isIntegerApproximation(log(stateSize, base))}
                          type="submit" onClick={this.patternGroupingRows}
                          value={"PG (y) ["+this.state.patternGroupingRowsStep+"]"} title="Pattern Grouping (rows only)"/>
                 </div>
