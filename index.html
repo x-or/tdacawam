@@ -204,6 +204,16 @@
       function isIntegerApproximation(f) {
         return Math.abs(Math.round(f) - f) < 1.e-10;
       }
+
+      assert(isIntegerApproximation(12345.6) === false, "isIntegerApproximation(12345.6)");
+      assert(isIntegerApproximation(12345.0) === true, "isIntegerApproximation(12345.0)");
+      assert(isIntegerApproximation(1.5) === false, "isIntegerApproximation(1.5)");
+      assert(isIntegerApproximation(1.0) === true, "isIntegerApproximation(1.0)");
+      assert(isIntegerApproximation(0.001) === false, "isIntegerApproximation(0.001)");
+      assert(isIntegerApproximation(0.0) === true, "isIntegerApproximation(0.0)");
+      assert(isIntegerApproximation(-0.001) === false, "isIntegerApproximation(-0.001)");
+      assert(isIntegerApproximation(-1.0) === true, "isIntegerApproximation(-1.0)");
+      assert(isIntegerApproximation(-1.5) === false, "isIntegerApproximation(-1.5)");
     </script>
   </head>
   <body bgcolor="#efefef">
