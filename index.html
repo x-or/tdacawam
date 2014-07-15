@@ -463,10 +463,10 @@
           var modulus = this.state.modulus;
           var stateSize = this.state.stateSize;
           if (!isIntegerApproximation(log(stateSize, base)) 
-           && !isIntegerApproximation(log(Math.floor(stateSize / 2), base))) {
+           && !isIntegerApproximation(log(stateSize / 2, base))) {
             throw "Incorrect state size";
           }
-          if (!isIntegerApproximation(log(Math.floor(stateSize / 2), base))) {
+          if (!isIntegerApproximation(log(stateSize / 2, base))) {
             stateSize *= 2;
             this.setStateSize(stateSize);
             this.setState({patternName: "qpdl"});
@@ -511,10 +511,10 @@
           var modulus = this.state.modulus;
           var stateSize = this.state.stateSize;
           if (!isIntegerApproximation(log(stateSize, base)) 
-           && !isIntegerApproximation(log(Math.floor(stateSize / 2), base))) {
+           && !isIntegerApproximation(log(stateSize / 2, base))) {
             throw "Incorrect state size";
           }
-          if (!isIntegerApproximation(log(Math.floor(stateSize / 2), base))) {
+          if (!isIntegerApproximation(log(stateSize / 2, base))) {
             stateSize *= 2;
             this.setStateSize(stateSize);
             this.setState({patternName: "mopdl"});
@@ -884,11 +884,11 @@
                          type="submit" onClick={this.digitReversalPermutationRows}
                          value={BorD+"RP(y)"} title={BitOrDigit+"-Reversal Permutation (rows only)"}/>
                   <input style={IndicatorStyle[this.state.isQuadrupleDigitReversalPermutationRowsColsWasApplied]}
-                         disabled={!isIntegerApproximation(log(Math.floor(stateSize/2), base))}
+                         disabled={!isIntegerApproximation(log(stateSize/2, base))}
                          type="submit" onClick={this.quadrupleDigitReversalPermutationRowsCols}
                          value={"4"+BorD+"RP(x,y)"} title={"Quadruple "+BitOrDigit+"-Reversal Permutation (rows and columns)"} />
                   <input style={IndicatorStyle[this.state.isQuadrupleDigitReversalPermutationRowsWasApplied]}
-                         disabled={!isIntegerApproximation(log(Math.floor(stateSize/2), base))}
+                         disabled={!isIntegerApproximation(log(stateSize/2, base))}
                          type="submit" onClick={this.quadrupleDigitReversalPermutationRows}
                          value={"4"+BorD+"RP(y)"} title={"Quadruple "+BitOrDigit+"-Reversal Permutation (rows only)"}/>
                   <input style={IndicatorStyle[this.state.patternGroupingRowsColsStep != 0]}
