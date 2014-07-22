@@ -555,8 +555,35 @@
             }
           }
         },
+        modularCircle: function() {
+          var modulus = this.state.modulus;
+          var stateSize = this.state.stateSize;
+          var state = this.stateCells[this.curState];
+          this.clearState();
+          for (var i = 0; i < stateSize; i++) {
+            for (var j = 0; j < stateSize; j++) {
+              state[i][j] = (i*i + j*j) % modulus;
+            }
+          }
+          /* // Automata way
+          for (var i = 0; i < stateSize; i++) {
+            state[i][0] = (i*i) % modulus;
+            state[0][i] = (i*i) % modulus;
+          }
+          var i0, i1, j0, j1;
+          for (i0 = 0; i0 < stateSize-1; i0++) {
+            i1 = i0 + 1;
+            for (j0 = 0; j0 < stateSize-1; j0++) {
+              j1 = j0 + 1;
+              // reversing state with rule 15-10
+              // solves s11 from (s00 - s01 - s10 + s11 == 0) (mod modulus)
+              state[i1][j1] = ((- state[i0][j0] + modulus) + state[i0][j1] + state[i1][j0]) % modulus;
+            }
+          }
+          */
+        },
         statics: {
-          patternNames: ["empty", "diagonal", "permuted-diagonal", "qpdl", "mopdl", "xor", "mulmod", "random"],
+          patternNames: ["empty", "diagonal", "permuted-diagonal", "qpdl", "mopdl", "xor", "mulmod", "circle", "random"],
           patterns: {
             "empty": {title: "Empty", apply: function() { this.emptyPattern(); }},
             "diagonal": {title: "Diagonal Line", apply: function() { this.diagonalLine(); }},
@@ -565,6 +592,7 @@
             "mopdl": { title: "Manifestation of PDL", apply: function() { this.manifestationOfPDL(); }},
             "xor": { title: "Exclusive Or", apply: function() { this.exclusiveOrPattern(); }},
             "mulmod": { title: "Modular Multiplication", apply: function() { this.modularMultiplication(); }},
+            "circle": { title: "Modular Circle", apply: function() { this.modularCircle(); }},
             "random": {title: "Random", apply: function() { this.randomPattern(); }}
           }
         },
