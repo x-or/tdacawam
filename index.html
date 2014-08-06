@@ -409,7 +409,7 @@
             isDigitReversalPermutationRowsColsWasApplied: false,
             isQuadrupleDigitReversalPermutationRowsWasApplied: false,
             isQuadrupleDigitReversalPermutationRowsColsWasApplied: false,
-            isValuesDigitalReversed: false,
+            isStateValuesDigitalReversed: false,
             patternGroupingRowsStep: 0,
             patternGroupingRowsColsStep: 0,
           };
@@ -429,7 +429,7 @@
             isDigitReversalPermutationRowsColsWasApplied: false,
             isQuadrupleDigitReversalPermutationRowsWasApplied: false,
             isQuadrupleDigitReversalPermutationRowsColsWasApplied: false,
-            isValuesDigitalReversed: false,
+            isStateValuesDigitalReversed: false,
             patternGroupingRowsStep: 0,
             patternGroupingRowsColsStep: 0,
             // Warning: may be reset same in the handleSizeChange
@@ -795,7 +795,7 @@
             for (var j = 0; j < stateSize; j++)
               state1[i][j] = dr[state0[i][j]];
           this.curState ^= 1;
-          this.setState({isValuesDigitalReversed: !this.state.isValuesDigitalReversed, patternName: "unknown"});
+          this.setState({isStateValuesDigitalReversed: !this.state.isStateValuesDigitalReversed, patternName: "unknown"});
           return false;
         },
         handleCanvaseMouseDown: function(event) {
@@ -846,7 +846,7 @@
             isDigitReversalPermutationRowsColsWasApplied: false,
             isQuadrupleDigitReversalPermutationRowsWasApplied: false,
             isQuadrupleDigitReversalPermutationRowsColsWasApplied: false,
-            isValuesDigitalReversed: false,
+            isStateValuesDigitalReversed: false,
             patternGroupingRowsStep: 0,
             patternGroupingRowsColsStep: 0,
           });
@@ -959,7 +959,7 @@
                          disabled={!isIntegerApproximation(log(stateSize, base))}
                          type="submit" onClick={this.patternGroupingRows}
                          value={"PG (y) ["+this.state.patternGroupingRowsStep+"]"} title="Pattern Grouping (rows only)"/>
-                  <input style={IndicatorStyle[this.state.isValuesDigitalReversed]}
+                  <input style={IndicatorStyle[this.state.isStateValuesDigitalReversed]}
                          disabled={!isIntegerApproximation(log(modulus, base))}
                          type="submit" onClick={this.digitalReverseOfTheValues}
                          value={BorD+"R-V"} title={BitOrDigital+"-Reverse of the State Values"} />
